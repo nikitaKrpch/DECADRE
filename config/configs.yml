@@ -16,12 +16,12 @@ dictionaries_files:
   - dictionaries/culture du viol.txt
   - dictionaries/verb_conditional.txt
 engine: text-davinci-003
-model: gpt-5
-max_tokens: 1500
+model: openai/gpt-oss-120b   # EPFL inference endpoint (was: gpt-5)
+max_tokens: 8000   # gpt-oss spends part of this on reasoning before answering (was: 1500)
 max_completion_tokens: 6000
 temperature: 0.3
 top_p: 0.7
-frequency_penalty: 0.5
+frequency_penalty: 0.0  # was 0.5: penalised the repeated "Question N : Option M" answer format
 presence_penalty: 0.0
 reasoning_effort: medium  # For classification tasks, minimal reasoning is often sufficient
 verbosity: medium  # For concise responses

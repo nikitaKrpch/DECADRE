@@ -49,12 +49,17 @@ stemmer = FrenchStemmer()
 
 # Initialize OpenAI client (will be set with API key later)
 openai_client = None
+# Optional second client used when the primary key fails (e.g. busy shared key)
+fallback_client = None
 
 def set_openai_api_key(api_key):
-    """Set the OpenAI API key"""
-    global openai_client
-    openai_client = AsyncOpenAI(api_key=api_key)
-    logger.info("🔑 OpenAI API key configured")
+    """Set the OpenAI API key (base URL comes from OPENAI_BASE_URL if set)"""
+    global openai_client, fallback_client
+    # max_retries=1: retry a refused request once before giving up on this key
+    openai_client = AsyncOpenAI(api_key=api_key, max_retries=1)
+    fallback_key = os.getenv("OPENAI_API_KEY_FALLBACK")
+    fallback_client = AsyncOpenAI(api_key=fallback_key, max_retries=1) if fallback_key else None
+    logger.info(f"🔑 API key configured (fallback key: {'yes' if fallback_client else 'no'})")
 
 def load_yaml_config(path):
     try:
@@ -88,6 +93,9 @@ def get_model_max_tokens(model_name):
         "gpt-5-mini": 65536,      # 65k context
         "gpt-5-nano": 32768,       # 32k context
         "gpt-5-chat-latest": 131072,
+        # EPFL inference endpoint (hackathon)
+        "openai/gpt-oss-120b": 131072,
+        "swiss-ai/Apertus-v1.5-70B": 65536,
         # Add other models if needed
     }
     return model_max_context.get(model_name, 4096)  # Default to 4096 if model not found
@@ -169,8 +177,15 @@ async def classify_categories_with_chatGPT(prompt, text, config, cancellation_ev
             print(f"🚀 Using GPT-4 with max_tokens: {params['max_tokens']}")
             logger.debug(f"🚀 Using GPT-4 with max_tokens: {params['max_tokens']}")
 
-        # Use the new asynchronous OpenAI API call
-        response = await openai_client.chat.completions.create(**params)
+        # Use the new asynchronous OpenAI API call, falling back to the second key if the first fails
+        try:
+            response = await openai_client.chat.completions.create(**params)
+        except Exception as e:
+            if not fallback_client:
+                raise
+            print(f"⚠️ Primary API key failed ({e}), retrying with fallback key")
+            logger.warning(f"⚠️ Primary API key failed ({e}), retrying with fallback key")
+            response = await fallback_client.chat.completions.create(**params)
 
         # Check for cancellation after API call
         if cancellation_event and cancellation_event.is_set():
