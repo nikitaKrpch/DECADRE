@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{# Assistant de rédaction page (owner: P3). Needs P4's blueprint named "writer". #}
+
+{% block title %}Assistant de rédaction{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('writer.static', filename='editor.css') }}">
+<div id="decadre-writer"></div>
+{% endblock %}
+
+{% block scripts %}
+{# Order matters: data and modules first, then the UI, then main.js which wires them.
+   dev/mock.js only fills in modules that are still missing; remove it at code freeze. #}
+{% for f in ['rules.js', 'engine.js', 'checklist.js', 'deepcheck.js', 'dev/mock.js', 'samples.js', 'ui.js', 'main.js'] %}
+<script src="{{ url_for('writer.static', filename=f) }}"></script>
+{% endfor %}
+{% endblock %}

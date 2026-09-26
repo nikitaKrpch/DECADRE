@@ -1,0 +1,513 @@
+/* Assistant de rédaction — styles (owner: P3). Everything is scoped under .dw */
+
+.dw {
+  --dw-ink: #1d2433;
+  --dw-muted: #5b6475;
+  --dw-line: #dde2ea;
+  --dw-soft: #f5f7fa;
+  --dw-bg: #ffffff;
+  --dw-accent: #2668aa; /* same blue as the institute's navbar */
+  --dw-strong: #c0262d;
+  --dw-hint: #a65300;
+  --dw-quote: #5f6b7a;
+  --dw-ai: #6d28d9;
+  --dw-ok: #1e7a46;
+  --dw-radius: 10px;
+
+  color: var(--dw-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 48px;
+}
+.dw *,
+.dw *::before,
+.dw *::after {
+  box-sizing: border-box;
+}
+
+.dw-head {
+  margin-bottom: 16px;
+}
+.dw-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.dw-sub {
+  color: var(--dw-muted);
+  margin: 0;
+}
+.dw-h2 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dw-muted);
+  margin: 0 0 10px;
+}
+.dw-h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+.dw-small {
+  font-size: 0.8rem;
+  color: var(--dw-muted);
+  margin: 8px 0 0;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+.dw-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+.dw-side {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+@media (max-width: 900px) {
+  .dw-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dw-side {
+    position: static;
+    max-height: none;
+  }
+}
+
+.dw-panel {
+  background: var(--dw-bg);
+  border: 1px solid var(--dw-line);
+  border-radius: var(--dw-radius);
+  padding: 14px 16px;
+}
+.dw-panel p {
+  margin: 0;
+}
+
+.dw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.dw-wordcount {
+  margin-left: auto;
+  color: var(--dw-muted);
+  font-size: 0.85rem;
+}
+
+.dw-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--dw-accent);
+  background: var(--dw-accent);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.dw-btn:hover {
+  filter: brightness(1.08);
+}
+.dw-btn-quiet {
+  background: transparent;
+  color: var(--dw-accent);
+}
+.dw-btn-quiet:hover {
+  background: var(--dw-soft);
+  filter: none;
+}
+.dw-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.dw button:focus-visible,
+.dw-input:focus-visible {
+  outline: 3px solid rgba(38, 104, 170, 0.45);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ editor
+   The textarea (on top, transparent background) and the backdrop (behind,
+   transparent text) MUST share every property that affects text layout. */
+
+.dw-editor {
+  position: relative;
+  background: var(--dw-bg);
+  border: 1px solid var(--dw-line);
+  border-radius: var(--dw-radius);
+}
+.dw-editor:focus-within {
+  border-color: var(--dw-accent);
+  box-shadow: 0 0 0 3px rgba(38, 104, 170, 0.15);
+}
+
+.dw-backdrop,
+.dw-input {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.75;
+  letter-spacing: normal;
+  word-spacing: normal;
+  tab-size: 4;
+  padding: 24px 28px;
+  margin: 0;
+  border: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.dw-backdrop {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  pointer-events: none;
+  overflow: hidden;
+}
+.dw-input {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 420px;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: var(--dw-ink);
+  caret-color: var(--dw-ink);
+  outline: none;
+}
+.dw-input::placeholder {
+  color: #9aa3b2;
+}
+@media (max-width: 600px) {
+  .dw-backdrop,
+  .dw-input {
+    font-size: 16px; /* 16px avoids iOS zoom on focus */
+    padding: 16px;
+  }
+  .dw-input {
+    min-height: 320px;
+  }
+}
+
+/* ------------------------------------------------------------------ marks */
+
+.dw-mark {
+  color: transparent;
+  border-radius: 3px;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  text-decoration-skip-ink: none;
+}
+.dw-mark.dw-strong {
+  text-decoration-style: wavy;
+  text-decoration-color: var(--dw-strong);
+  background: rgba(192, 38, 45, 0.07);
+}
+.dw-mark.dw-hint {
+  text-decoration-style: dotted;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--dw-hint);
+  background: transparent;
+}
+.dw-mark.dw-quote {
+  text-decoration-style: dashed;
+  text-decoration-color: var(--dw-quote);
+  background: transparent;
+}
+.dw-mark.dw-ai {
+  text-decoration-style: solid;
+  text-decoration-color: var(--dw-ai);
+  background: rgba(109, 40, 217, 0.1);
+}
+.dw-mark.is-active {
+  background: rgba(38, 104, 170, 0.2);
+}
+
+.dw-icon {
+  display: inline-block;
+  width: 1.1em;
+  text-align: center;
+  font-style: normal;
+}
+.dw-icon.dw-strong,
+.dw-tag.dw-strong {
+  color: var(--dw-strong);
+}
+.dw-icon.dw-hint,
+.dw-tag.dw-hint {
+  color: var(--dw-hint);
+}
+.dw-icon.dw-quote,
+.dw-tag.dw-quote {
+  color: var(--dw-quote);
+}
+.dw-icon.dw-ai,
+.dw-tag.dw-ai {
+  color: var(--dw-ai);
+}
+
+/* ------------------------------------------------------------------ card */
+
+.dw-card {
+  position: absolute;
+  z-index: 5;
+  width: min(360px, calc(100% - 16px));
+  background: var(--dw-bg);
+  border: 1px solid var(--dw-line);
+  border-radius: var(--dw-radius);
+  box-shadow: 0 10px 30px rgba(20, 30, 50, 0.16);
+  padding: 12px 14px 12px;
+  font-size: 0.92rem;
+}
+.dw-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.dw-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.dw-x {
+  border: 0;
+  background: transparent;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--dw-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.dw-x:hover {
+  background: var(--dw-soft);
+}
+.dw-card-match {
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  margin: 2px 0 6px;
+  text-decoration: line-through;
+  text-decoration-color: rgba(0, 0, 0, 0.35);
+}
+.dw-card-reason {
+  margin: 0 0 8px;
+}
+.dw-card-note {
+  margin: 0 0 8px;
+  color: var(--dw-muted);
+  font-style: italic;
+}
+.dw-card-label {
+  margin: 4px 0 6px;
+  font-size: 0.78rem;
+  color: var(--dw-muted);
+}
+.dw-card-reps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.dw-rep {
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid var(--dw-ok);
+  background: var(--dw-ok);
+  color: #fff;
+  border-radius: 8px;
+  padding: 5px 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.dw-rep:hover {
+  filter: brightness(1.1);
+}
+.dw-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--dw-line);
+  padding-top: 8px;
+}
+.dw-source {
+  font-size: 0.75rem;
+  color: var(--dw-muted);
+}
+
+/* ------------------------------------------------------------------ side panel */
+
+.dw-counter {
+  text-align: center;
+}
+.dw-count-num {
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.dw-count-zero {
+  color: var(--dw-ok);
+}
+.dw-count-label {
+  color: var(--dw-muted);
+}
+.dw-count-empty {
+  color: var(--dw-muted);
+}
+.dw-count-break {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  padding: 0;
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+}
+
+.dw-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.dw-list:empty::after {
+  content: "—";
+  color: var(--dw-muted);
+}
+.dw-item {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  text-align: left;
+  font: inherit;
+  font-size: 0.9rem;
+  border: 0;
+  background: transparent;
+  padding: 5px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.dw-item:hover {
+  background: var(--dw-soft);
+}
+.dw-item-match {
+  font-weight: 600;
+}
+.dw-item-rep {
+  color: var(--dw-ok);
+  font-size: 0.85rem;
+}
+
+.dw-btn-ai {
+  width: 100%;
+  background: var(--dw-ai);
+  border-color: var(--dw-ai);
+}
+.dw-ai-status {
+  margin-top: 8px !important;
+  font-size: 0.85rem;
+}
+.dw-ai-status:empty {
+  display: none;
+}
+.dw-ai-status.is-error {
+  color: var(--dw-strong);
+}
+.dw-unlocated-list {
+  padding-left: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.dw-how p {
+  font-size: 0.88rem;
+}
+.dw-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dw-sample {
+  font-family: Georgia, serif;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-skip-ink: none;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.dw-sample.dw-strong { text-decoration-style: wavy; text-decoration-color: var(--dw-strong); background: rgba(192, 38, 45, 0.07); }
+.dw-sample.dw-hint { text-decoration-style: dotted; text-decoration-thickness: 3px; text-decoration-color: var(--dw-hint); }
+.dw-sample.dw-quote { text-decoration-style: dashed; text-decoration-color: var(--dw-quote); }
+.dw-sample.dw-ai { text-decoration-style: solid; text-decoration-color: var(--dw-ai); background: rgba(109, 40, 217, 0.1); }
+
+/* Checklist items (P4 renders them; these classes are the shared look) */
+.dw-checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.88rem;
+}
+.dw-check {
+  display: flex;
+  gap: 8px;
+}
+.dw-check-mark {
+  flex: none;
+  font-weight: 700;
+}
+.dw-check.is-done .dw-check-mark {
+  color: var(--dw-ok);
+}
+.dw-check.is-todo .dw-check-mark {
+  color: var(--dw-hint);
+}
+.dw-check.is-done .dw-check-label {
+  color: var(--dw-muted);
+}
+.dw-check-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--dw-muted);
+}
+
+.dw-disclaimer {
+  margin: 10px 2px 0;
+  font-size: 0.82rem;
+  color: var(--dw-muted);
+}

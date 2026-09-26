@@ -910,6 +910,10 @@ def cancel_job(job_id):
     
 
 
+# Assistant de rédaction (writer/): journalist-facing editor at /rediger
+from writer import bp as writer_bp
+app.register_blueprint(writer_bp)
+
 if __name__ == '__main__':
     print("🚀 Starting Flask application...")
     print(f"📁 Upload folder: {UPLOAD_FOLDER}")
