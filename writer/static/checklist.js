@@ -95,15 +95,14 @@
     if (isPartnerKilling(t)) {
       items.push(item("feminicide", /feminicide/.test(t),
         "Nommer le féminicide", "Féminicide nommé",
-        "Une femme tuée par son conjoint ou ex-conjoint, c'est un féminicide. Nommez-le au moins une fois, idéalement dans le titre. " +
-          "Les mots comme « drame » ou « passionnel » sont signalés un par un dans les Suggestions.",
+        "Une femme tuée par son (ex-)conjoint : c'est un féminicide. Nommez-le, idéalement dans le titre.",
         "Livret décadréE 2023, p. 14",
         { at: headline(text), goto: "Voir le titre" }));
     }
 
     items.push(item("expert", hasExpert(t),
       "Citer une personne spécialisée", "Personne spécialisée citée",
-      "Par exemple une intervenante d'un centre LAVI, de Solidarité Femmes ou du Bureau de l'égalité de votre canton.",
+      "Ex. : centre LAVI, Solidarité Femmes, Bureau de l'égalité.",
       "Livret décadréE 2023, p. 8",
       { where: "Idéalement après le récit des faits." }));
 
