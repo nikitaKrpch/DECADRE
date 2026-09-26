@@ -95,7 +95,7 @@ def get_model_max_tokens(model_name):
         "gpt-5-chat-latest": 131072,
         # EPFL inference endpoint (hackathon)
         "openai/gpt-oss-120b": 131072,
-        "swiss-ai/Apertus-v1.5-70B": 65536,
+        "swiss-ai/Apertus-v1.5-70B": 262144,
         # Add other models if needed
     }
     return model_max_context.get(model_name, 4096)  # Default to 4096 if model not found
@@ -434,7 +434,8 @@ def classify_conditional_verbs(text, corpora):
 
 # Extract the option numbers along with their corresponding text from ChatGPT results
 def extract_chatGPT_results(chatGPT_results):
-    pattern = r"Question\s*(\d+)\s*[:\-]?\s*Option\s*[:]?[\s]*(\-?\d+)\s*[\.]?\s*(.*)"
+    # Models sometimes write the minus sign as a Unicode dash (e.g. "‑1" with U+2011), so accept those too
+    pattern = r"Question\s*(\d+)\s*[:\-]?\s*Option\s*[:]?[\s]*([\-‐-—−]?\d+)\s*[\.]?\s*(.*)"
 
     # Find all matches in the input text
     matches = re.finditer(pattern, chatGPT_results, re.IGNORECASE)
@@ -446,7 +447,7 @@ def extract_chatGPT_results(chatGPT_results):
     for match in matches:
         # Extract the number, option, and text for each match
         question_number = int(match.group(1))
-        option_number = int(match.group(2))
+        option_number = int(re.sub(r"[‐-—−]", "-", match.group(2)))
         explication = match.group(3).strip()
         # Remove leading punctuation and whitespace from the explanation
         explication = explication.lstrip(string.punctuation + ' ').strip()
