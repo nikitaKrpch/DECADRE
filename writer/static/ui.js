@@ -29,6 +29,7 @@
     clear: "Effacer",
     editorLabel: "Texte de l'article",
     disclaimer:
+      "C'est votre responsabilité. " +
       "Suggestions basées sur les recommandations de l'institut décadréE (livret 2023). " +
       "Elles ne remplacent pas votre jugement : c'est vous qui décidez.",
     suggestions: "Suggestions",
