@@ -29,9 +29,8 @@
     clear: "Effacer",
     editorLabel: "Texte de l'article",
     disclaimer:
-      "C'est votre responsabilité. " +
-      "Suggestions basées sur les recommandations de l'institut décadréE (livret 2023). " +
-      "Elles ne remplacent pas votre jugement : c'est vous qui décidez.",
+      "Suggestions indicatives, inspirées du livret décadréE 2023 et d'une analyse IA ; " +
+      "elles n'engagent pas décadréE. La rédaction reste seule responsable du contenu publié.",
     suggestions: "Suggestions",
     checklist: "Points à considérer",
     howTitle: "Comment ça marche",
