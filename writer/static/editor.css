@@ -206,6 +206,13 @@
 /* ------------------------------------------------------------------ marks */
 
 .dw-mark {
+  /* Bootstrap (loaded by base.html) pads <mark>; any extra width here shifts every
+     underline after it on the line, so reset everything that affects text width. */
+  padding: 0;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  letter-spacing: inherit;
   color: transparent;
   border-radius: 3px;
   text-decoration-line: underline;
