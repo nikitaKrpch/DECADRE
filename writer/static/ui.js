@@ -11,6 +11,7 @@
  *   Decadre.ui.render(text, issues)   issues sorted by start, non-overlapping
  *   Decadre.ui.getText() / setText(text)
  *   Decadre.ui.replaceRange(start, end, text)
+ *   Decadre.ui.select(start, end)     select + scroll to characters start..end (end optional)
  *   Decadre.ui.setAiState(state, info) state: "idle" | "loading" | "done" | "error"
  *   Decadre.ui.renderUnlocated(items)
  *   Decadre.ui.checklistEl            container that Decadre.checklist.render fills
@@ -230,6 +231,43 @@
     }
   }
 
+  // Selects characters start..end in the editor and scrolls the page to them.
+  // For P4's checklist "Voir dans le texte". start === end places the cursor there.
+  function select(start, end) {
+    const ta = els.input;
+    const len = ta.value.length;
+    start = Math.max(0, Math.min(start, len));
+    end = Math.max(start, Math.min(end == null ? start : end, len));
+    closeCard();
+    ta.focus({ preventScroll: true });
+    ta.setSelectionRange(start, end);
+    // A collapsed range has no size on screen; measure one character to find the spot.
+    const r = rangeRect(start, end > start ? end : Math.min(start + 1, len));
+    if (r) window.scrollTo({ top: window.scrollY + r.top - window.innerHeight / 3, behavior: "smooth" });
+  }
+
+  // Where characters start..end are on screen. The backdrop holds exactly the same text as the
+  // textarea (split across text nodes by the <mark>s), so walk its text nodes to find them.
+  function rangeRect(start, end) {
+    const walker = document.createTreeWalker(els.backdrop, NodeFilter.SHOW_TEXT);
+    const range = document.createRange();
+    let pos = 0;
+    let started = false;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const n = node.data.length;
+      if (!started && start <= pos + n) {
+        range.setStart(node, start - pos);
+        started = true;
+      }
+      if (started && end <= pos + n) {
+        range.setEnd(node, end - pos);
+        return range.getClientRects()[0] || range.getBoundingClientRect();
+      }
+      pos += n;
+    }
+    return null;
+  }
+
   function clearText() {
     if (!getText()) return;
     els.input.focus();
@@ -431,6 +469,6 @@
       .join("")}</ul>`;
   }
 
-  const api = { init, render, getText, setText, replaceRange, setAiState, renderUnlocated, checklistEl: null, STRINGS };
+  const api = { init, render, getText, setText, replaceRange, select, setAiState, renderUnlocated, checklistEl: null, STRINGS };
   D.ui = api;
 })();
