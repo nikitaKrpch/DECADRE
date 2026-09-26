@@ -46,7 +46,7 @@
 
   // 4. An expert or specialised organisation.
   const hasExpert = (t) =>
-    /\b(association\w*|expert\w*|psycholog\w*|psychiatr\w*|specialiste\w*|sociolog\w*|chercheu\w*|bureau de l'egalite)\b/.test(t);
+    /\b(association\w*|expert\w*|psychologue\w*|psychiatre\w*|specialiste\w*|sociolog\w*|chercheu\w*|bureau (federal |cantonal )?de l'egalite|bfeg)\b/.test(t);
 
   // 5. Statistics: figures with a unit/scope, or an explicit reference to data.
   const hasStatistics = (t) =>
