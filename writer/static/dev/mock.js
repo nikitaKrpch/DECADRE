@@ -1,6 +1,6 @@
 /* DEV ONLY (owner: P3) — stand-ins so the UI can be built before the real parts exist.
  * Each block only runs if the real module is missing, so it steps aside automatically
- * once P2's rules.js / engine.js and P4's checklist.js / deepcheck.js are loaded.
+ * once P2's rules.js and P4's checklist.js / deepcheck.js are loaded. (The engine is real: ../engine.js)
  * Remove this file from editor.html at code freeze.
  */
 (function () {
@@ -32,56 +32,6 @@
       { id: "F02", category: "substances", patterns: ["soirée* arrosée*"], replacements: [], severity: "hint", reason: "L'alcool ne justifie pas la violence : à mentionner seulement si c'est utile à l'information.", source: "Livret 2023, p. 9 (enjeu 5)" },
       { id: "F03", category: "origine", patterns: ["d'origine"], replacements: [], severity: "hint", reason: "Accentuer l'origine de l'auteur invisibilise la diversité des profils. Est-ce nécessaire ici ?", source: "Livret 2023, p. 9 (enjeu 5)" },
     ];
-  }
-
-  if (!D.engine) {
-    console.info("[Decadre] mock engine in use");
-    const cache = new Map();
-    const toRegex = (pattern) => {
-      if (!cache.has(pattern)) {
-        const body = fold(pattern)
-          .trim()
-          .split(/\s+/)
-          .map((word) => word.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[a-z]*"))
-          .join("\\s+");
-        cache.set(pattern, new RegExp(`(?<![a-z0-9])${body}(?![a-z0-9])`, "g"));
-      }
-      return cache.get(pattern);
-    };
-    const inQuote = (text, pos) => {
-      const before = text.slice(0, pos);
-      if (before.lastIndexOf("«") > before.lastIndexOf("»")) return true;
-      return ((before.match(/["“”]/g) || []).length % 2) === 1;
-    };
-
-    D.engine = {
-      findIssues(text, rules) {
-        const folded = fold(text);
-        const found = [];
-        for (const rule of rules) {
-          for (const p of rule.patterns) {
-            const re = toRegex(p);
-            re.lastIndex = 0;
-            let m;
-            while ((m = re.exec(folded))) {
-              const start = m.index;
-              const end = start + m[0].length;
-              found.push({
-                key: `${rule.id}:${start}`, ruleId: rule.id, start, end, match: text.slice(start, end),
-                severity: rule.severity, replacements: rule.replacements || [], reason: rule.reason,
-                source: rule.source, inQuote: inQuote(text, start), origin: "rules",
-              });
-            }
-          }
-        }
-        // longest match first, then strong before hint; drop overlaps
-        found.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start) || (a.severity === "strong" ? -1 : 1));
-        const out = [];
-        let lastEnd = -1;
-        for (const is of found) if (is.start >= lastEnd) { out.push(is); lastEnd = is.end; }
-        return out;
-      },
-    };
   }
 
   if (!D.checklist) {
