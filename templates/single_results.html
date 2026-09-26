@@ -1,0 +1,646 @@
+{% extends "base.html" %}
+
+{% block title %}Résultats d'analyse{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-9">
+        <h2>📊 Résultats d'analyse de l'article</h2>
+        
+        <!-- Article Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>📄 Article analysé</h5>
+            </div>
+            <div class="card-body">
+                <h6><strong>Titre:</strong> {{ article_data.title }}</h6>
+                {% if article_data.description %}
+                <p><strong>Chapeau:</strong> {{ article_data.description[:200] }}{% if article_data.description|length > 200 %}...{% endif %}</p>
+                {% endif %}
+                <p><strong>Contenu:</strong> {{ article_data.content[:300] }}{% if article_data.content|length > 300 %}...{% endif %}</p>
+                <small class="text-muted">
+                    Caractères total: {{ (article_data.title|length + article_data.description|length + article_data.content|length) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Analysis Results in 3 columns -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🔍 Résultats de l'analyse NLP</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Column 1: Basic Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-3">📋 Analyse de base</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Article provient d'une agence:</strong>
+                            <span class="badge {% if result.agence == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.agence == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.agence_ex and result.agence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.agence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>En lien avec une affaire:</strong>
+                            <span class="badge {% if result.en_lien_avec_affaire == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.en_lien_avec_affaire == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.en_lien_avec_affaire_ex and result.en_lien_avec_affaire_ex != '-' %}
+                            <br><small class="text-muted">{{ result.en_lien_avec_affaire_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Mention féminicide:</strong>
+                            <span class="badge {% if result.mention_feminicide == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.mention_feminicide == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.mention_feminicide_ex and result.mention_feminicide_ex != '-' %}
+                            <br><small class="text-muted">{{ result.mention_feminicide_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Taille de l'article:</strong>
+                            <span class="badge 
+                                {% if result.taille == 1 %}bg-info
+                                {% elif result.taille == 2 %}bg-primary
+                                {% else %}bg-dark{% endif %}">
+                                {% if result.taille == 1 %}Court (≤1000)
+                                {% elif result.taille == 2 %}Moyen (≤4000)
+                                {% else %}Long (>4000){% endif %}
+                            </span>
+                            <br><small class="text-muted">{{ result.taille_ex }} caractères</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2: Content Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-warning mb-3">🧠 Analyse du contenu</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Le vocabulaire:</strong>
+                            <span class="badge 
+                                {% if result.vocabulaire == 1 %}bg-success
+                                {% elif result.vocabulaire == -1 %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {% if result.vocabulaire == 1 %}Positif
+                                {% elif result.vocabulaire == -1 %}Minimisant
+                                {% else %}Neutre{% endif %}
+                            </span>
+                            {% if result.vocabulaire == 1 %}
+                            <br><small class="text-muted">vocs_violence > 0 and vocs_minimisant = 0</small>
+                            {% elif result.vocabulaire == -1 %}
+                            <br><small class="text-muted">vocs_minimisant > vocs_violence</small>
+                            {% elif result.vocabulaire == 0 %}
+                            <br><small class="text-muted">vocs_minimisant < vocs_violence</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Santé mentale mentionnée:</strong>
+                            <span class="badge {% if result.sante_mentale == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.sante_mentale == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.sante_mentale_ex and result.sante_mentale_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sante_mentale_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Substances psychotropes:</strong>
+                            <span class="badge {% if result.substance_psychotrope == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.substance_psychotrope == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.substance_psychotrope_ex and result.substance_psychotrope_ex != '-' %}
+                            <br><small class="text-muted">{{ result.substance_psychotrope_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Animalisation présente:</strong>
+                            <span class="badge {% if result.animalisant == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.animalisant == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.animalisant_ex and result.animalisant_ex != '-' %}
+                            <br><small class="text-muted">{{ result.animalisant_ex }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Behavioral Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-danger mb-3">⚠️ Analyse comportementale</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Processus de sidération:</strong>
+                            <span class="badge {% if result.sideration == 1 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {% if result.sideration == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.sideration_ex and result.sideration_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sideration_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Culture du viol:</strong>
+                            <span class="badge {% if result.culture_du_viol == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.culture_du_viol == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.culture_du_viol_ex and result.culture_du_viol_ex != '-' %}
+                            <br><small class="text-muted">{{ result.culture_du_viol_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Mécanismes sous-tendant les violences:</strong>
+                            <span class="badge 
+                                {% if result.soustendent_violences == 1 %}bg-danger
+                                {% elif result.soustendent_violences in [0, -1] %}bg-warning
+                                {% else %}bg-success{% endif %}">
+                                {% if result.soustendent_violences == 1 %}Présents
+                                {% elif result.soustendent_violences in [0, -1] %}Absents
+                                {% endif %}
+                            </span>
+                            {% if result.soustendent_violences_ex and result.soustendent_violences_ex != '-' %}
+                            <br><small class="text-muted">{{ result.soustendent_violences_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Description agresseur:</strong>
+                            <span class="badge {% if result.desc_agresseur == 0 %}bg-warning{% else %}bg-success{% endif %}">
+                                {% if result.desc_agresseur == 0 %}Problématique{% else %}Appropriée{% endif %}
+                            </span>
+                            {% if result.desc_agresseur_ex and result.desc_agresseur_ex != '-' %}
+                            <br><small class="text-muted">{{ result.desc_agresseur_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Validité des informations:</strong>
+                            <span class="badge 
+                                {% if result.validite == 1 %}bg-success
+                                {% elif result.validite == -1 %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {% if result.validite == 1 %}Élevée
+                                {% elif result.validite == -1 %}Faible
+                                {% else %}Moyenne{% endif %}
+                            </span>
+                            {% if result.validite_ex and result.validite_ex != '-' %}
+                            <br><small class="text-muted">{{ result.validite_ex }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complete GPT Analysis Results -->
+        {% if result.classification_result and result.classification_result != '-' %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🤖 Analyse GPT complète</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Column 1: Violence Classification -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-3">🎯 Classification des violences</h6>
+                        
+                        {% if result.type_violence is not none and result.type_violence != '-' %}
+                        <div class="mb-3">
+                            <strong>1. Type de violence:</strong>
+                            <span class="badge bg-primary">{{ result.type_violence }}</span>
+                            <br><small class="text-primary">
+                                {% if result.type_violence == 1 %}Violence psychologique
+                                {% elif result.type_violence == 2 %}Violences verbales
+                                {% elif result.type_violence == 3 %}Violences économiques
+                                {% elif result.type_violence == 4 %}Violences physiques
+                                {% elif result.type_violence == 5 %}Violences sexuelles
+                                {% elif result.type_violence == 6 %}Autres ou indéterminé
+                                {% elif result.type_violence == 7 %}Féminicide
+                                {% else %}Type non défini
+                                {% endif %}
+                            </small>
+                            {% if result.type_violence_ex and result.type_violence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.type_violence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.cadre_violence is not none and result.cadre_violence != '-' %}
+                        <div class="mb-3">
+                            <strong>2. Cadre de violence:</strong>
+                            <span class="badge bg-primary">{{ result.cadre_violence }}</span>
+                            <br><small class="text-primary">
+                                {% if result.cadre_violence == 1 %}Cadre professionnel
+                                {% elif result.cadre_violence == 2 %}L'espace public, la rue
+                                {% elif result.cadre_violence == 3 %}Le couple, l'espace domestique
+                                {% elif result.cadre_violence == 4 %}Autre
+                                {% else %}Cadre non défini
+                                {% endif %}
+                            </small>
+                            {% if result.cadre_violence_ex and result.cadre_violence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.cadre_violence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.feminicide is not none and result.feminicide != '-' %}
+                        <div class="mb-3">
+                            <strong>3. Féminicide:</strong>
+                            <span class="badge {% if result.feminicide == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.feminicide == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.feminicide_ex and result.feminicide_ex != '-' %}
+                            <br><small class="text-muted">{{ result.feminicide_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.escalade_violences is not none and result.escalade_violences != '-' %}
+                        <div class="mb-3">
+                            <strong>13. Escalade violences:</strong>
+                            <span class="badge {% if result.escalade_violences == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.escalade_violences == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.escalade_violences_ex and result.escalade_violences_ex != '-' %}
+                            <br><small class="text-muted">{{ result.escalade_violences_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.autres_violences is not none and result.autres_violences != '-' %}
+                        <div class="mb-3">
+                            <strong>15. Autres violences:</strong>
+                            <span class="badge bg-warning">{{ result.autres_violences }}</span>
+                            <br><small class="text-primary">
+                                {% if result.autres_violences == 1 %}L'article cite des violences de manière générale (ex. violences domestiques, harcèlement de rue).
+                                {% elif result.autres_violences == 0 %}L'article cite d'autres violences sexistes faites par le même auteur sur une ou plusieurs victimes, ou subies par la même victime.
+                                {% elif result.autres_violences == -1 %}L'article ne cite qu'une violence.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.autres_violences_ex and result.autres_violences_ex != '-' %}
+                            <br><small class="text-muted">{{ result.autres_violences_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Column 2: Journalistic Analysis & Sources -->
+                    <div class="col-md-4">
+                        <h6 class="text-success mb-3">📰 Analyse journalistique</h6>
+                        
+                        {% if result.sources is not none and result.sources != '-' %}
+                        <div class="mb-3">
+                            <strong>4. Sources:</strong>
+                            <span class="badge bg-info">{{ result.sources }}</span>
+                            <br><small class="text-primary">
+                                {% if result.sources == 1 %}L'article cite directement ou indirectement des expert-e-s. Les expert-e-s sont des personnes externes à l'affaire appelées par le média ou la cour pour donner leur avis. Par exemple, des médias, des victimes passées ou les avocat-e-s ne sont pas des expert-e-s ; des expert-e-s psychiatres, des politiques, des associations sont des expert-e-s.
+                                {% elif result.sources == 0 %}L'article croise la version de la victime et de l'agresseur, ou contient la version de la victime.
+                                {% elif result.sources == -1 %}L'article ne contient que la version de l'agresseur.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.sources_ex and result.sources_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sources_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.hierarchisation is not none and result.hierarchisation != '-' %}
+                        <div class="mb-3">
+                            <strong>5. Hiérarchisation:</strong>
+                            <span class="badge bg-warning">{{ result.hierarchisation }}</span>
+                            <br><small class="text-primary">
+                                {% if result.hierarchisation == 1 %}Le titre et le chapeau mentionnent les violences.
+                                {% elif result.hierarchisation == 0 %}Le titre et/ou le chapeau ne mentionnent pas les violences.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.hierarchisation_ex and result.hierarchisation_ex != '-' %}
+                            <br><small class="text-muted">{{ result.hierarchisation_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if result.statistiques is not none and result.statistiques != '-' %}
+                        <div class="mb-3">
+                            <strong>14. Statistiques:</strong>
+                            <span class="badge bg-success">{{ result.statistiques }}</span>
+                            <br><small class="text-primary">
+                                {% if result.statistiques == 1 %}Des statistiques mettant en perspective les violences en général comme un fait de société sont utilisées.
+                                {% elif result.statistiques == 0 %}Des statistiques sur un seul type de violence sont utilisées.
+                                {% elif result.statistiques == -1 %}Aucune statistique n'est présente dans l'article.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.statistiques_ex and result.statistiques_ex != '-' %}
+                            <br><small class="text-muted">{{ result.statistiques_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.citations is not none and result.citations != '-' %}
+                        <div class="mb-3">
+                            <strong>16. Citations:</strong>
+                            <span class="badge bg-info">{{ result.citations }}</span>
+                            <br><small class="text-primary">
+                                {% if result.citations == 1 %}L'article interroge un-e expert-e des violences sexistes (citation directe).
+                                {% elif result.citations == 0 %}L'article mentionne un-e expert-e, une association ou institution travaillant sur les violences sexistes (citation indirecte).
+                                {% elif result.citations == -1 %}L'article ne fait aucune référence aux personnes ou organisations travaillant sur les violences sexistes.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.citations_ex and result.citations_ex != '-' %}
+                            <br><small class="text-muted">{{ result.citations_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.ressources is not none and result.ressources != '-' %}
+                        <div class="mb-3">
+                            <strong>17. Ressources:</strong>
+                            <span class="badge bg-info">{{ result.ressources }}</span>
+                            <br><small class="text-primary">
+                                {% if result.ressources == 1 %}L'article mentionne un numéro d'aide ou site internet pour les victimes (encadré, numéro, lien direct).
+                                {% elif result.ressources == 0 %}L'article mentionne indirectement une ressource pouvant aider les victimes (texte de loi, organisation aidant les victimes, etc.).
+                                {% elif result.ressources == -1 %}L'article ne mentionne aucun élément informatif pour les victimes.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.ressources_ex and result.ressources_ex != '-' %}
+                            <br><small class="text-muted">{{ result.ressources_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Column 3: Actors & Relationships -->
+                    <div class="col-md-4">
+                        <h6 class="text-danger mb-3">👥 Acteurs et relations</h6>
+                        
+                        {% if result.desc_victime is not none and result.desc_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>6. Description victime:</strong>
+                            <span class="badge {% if result.desc_victime == 0 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.desc_victime == 0 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.desc_victime_ex and result.desc_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.desc_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.nationalite_auteur is not none and result.nationalite_auteur != '-' %}
+                        <div class="mb-3">
+                            <strong>7. Nationalité auteur:</strong>
+                            <span class="badge bg-secondary">{{ result.nationalite_auteur }}</span>
+                            <br><small class="text-primary">
+                                {% if result.nationalite_auteur == 1 %}Amérique du Nord
+                                {% elif result.nationalite_auteur == 2 %}Amérique du Sud
+                                {% elif result.nationalite_auteur == 3 %}Afrique
+                                {% elif result.nationalite_auteur == 4 %}Europe
+                                {% elif result.nationalite_auteur == 5 %}Asie
+                                {% elif result.nationalite_auteur == 6 %}Océanie
+                                {% elif result.nationalite_auteur == 7 %}Aucune nationalité ou origine n'est mentionnée
+                                {% else %}Si la nationalité et l'origine sont mentionnées, l'origine prévaut.
+                                {% endif %}
+                            </small>
+                            {% if result.nationalite_auteur_ex and result.nationalite_auteur_ex != '-' %}
+                            <br><small class="text-muted">{{ result.nationalite_auteur_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.nationalite_victime is not none and result.nationalite_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>8. Nationalité victime:</strong>
+                            <span class="badge bg-secondary">{{ result.nationalite_victime }}</span>
+                            <br><small class="text-primary">
+                                {% if result.nationalite_victime == 1 %}Amérique du Nord
+                                {% elif result.nationalite_victime == 2 %}Amérique du Sud
+                                {% elif result.nationalite_victime == 3 %}Afrique
+                                {% elif result.nationalite_victime == 4 %}Europe
+                                {% elif result.nationalite_victime == 5 %}Asie
+                                {% elif result.nationalite_victime == 6 %}Océanie
+                                {% elif result.nationalite_victime == 7 %}Aucune nationalité ou origine n'est mentionnée
+                                {% else %}Si la nationalité et l'origine sont mentionnées, l'origine prévaut.
+                                {% endif %}
+                            </small>
+                            {% if result.nationalite_victime_ex and result.nationalite_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.nationalite_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.nationalite_suisse_auteur is not none and result.nationalite_suisse_auteur != '-' %}
+                        <div class="mb-3">
+                            <strong>9. Nationalité suisse auteur:</strong>
+                            <span class="badge {% if result.nationalite_suisse_auteur == 1 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {% if result.nationalite_suisse_auteur == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.nationalite_suisse_auteur_ex and result.nationalite_suisse_auteur_ex != '-' %}
+                            <br><small class="text-muted">{{ result.nationalite_suisse_auteur_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.nationalite_suisse_victime is not none and result.nationalite_suisse_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>10. Nationalité suisse victime:</strong>
+                            <span class="badge {% if result.nationalite_suisse_victime == 1 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {% if result.nationalite_suisse_victime == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.nationalite_suisse_victime_ex and result.nationalite_suisse_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.nationalite_suisse_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Second Row for remaining criteria -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h6 class="text-warning mb-3">🔗 Relations et contexte</h6>
+                        
+                        {% if result.desc_relation_protagonistes is not none and result.desc_relation_protagonistes != '-' %}
+                        <div class="mb-3">
+                            <strong>11. Description relation protagonistes:</strong>
+                            <span class="badge bg-info">{{ result.desc_relation_protagonistes }}</span>
+                            <br><small class="text-primary">
+                                {% if result.desc_relation_protagonistes == 1 %}La relation de pouvoir et l'emprise sont clairement mentionnées (termes comme emprise, ascendance, pression, pouvoir ; l'auteur est un supérieur hiérarchique ; la victime est mineure).
+                                {% elif result.desc_relation_protagonistes == 0 %}La relation de pouvoir et d'emprise n'est pas mentionnée explicitement.
+                                {% elif result.desc_relation_protagonistes == -1 %}L'auteur est aussi considéré comme une victime ou la victime est aussi considérée comme un auteur.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.desc_relation_protagonistes_ex and result.desc_relation_protagonistes_ex != '-' %}
+                            <br><small class="text-muted">{{ result.desc_relation_protagonistes_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.type_relation_protagonistes is not none and result.type_relation_protagonistes != '-' %}
+                        <div class="mb-3">
+                            <strong>12. Type relation protagonistes:</strong>
+                            <span class="badge bg-primary">{{ result.type_relation_protagonistes }}</span>
+                            <br><small class="text-primary">
+                                {% if result.type_relation_protagonistes == 1 %}Emprise psychologique (ex. dénigrement, chantage, peur, dénigrement).
+                                {% elif result.type_relation_protagonistes == 2 %}Hiérarchie professionnelle (ex. supérieur hiérarchique, décisions sur le travail).
+                                {% elif result.type_relation_protagonistes == 3 %}La victime est mineure.
+                                {% elif result.type_relation_protagonistes == 4 %}Autre ou pas de mention.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.type_relation_protagonistes_ex and result.type_relation_protagonistes_ex != '-' %}
+                            <br><small class="text-muted">{{ result.type_relation_protagonistes_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="text-dark mb-3">⚖️ Conséquences</h6>
+                        
+                        {% if result.consequences_auteur is not none and result.consequences_auteur != '-' %}
+                        <div class="mb-3">
+                            <strong>18. Conséquences auteur:</strong>
+                            <span class="badge bg-warning">{{ result.consequences_auteur }}</span>
+                            <br><small class="text-primary">
+                                {% if result.consequences_auteur == 1 %}Péril pour sa carrière ou son image
+                                {% elif result.consequences_auteur == 2 %}Conséquence judiciaire (amendes ou prison)
+                                {% elif result.consequences_auteur == 3 %}Conséquences psychologiques
+                                {% elif result.consequences_auteur == -1 %}Aucun impact mentionné.
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.consequences_auteur_ex and result.consequences_auteur_ex != '-' %}
+                            <br><small class="text-muted">{{ result.consequences_auteur_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.consequences_victime is not none and result.consequences_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>19. Conséquences victime:</strong>
+                            <span class="badge bg-danger">{{ result.consequences_victime }}</span>
+                             <br><small class="text-primary">
+                                {% if result.consequences_victime == 1 %}Conséquences physiques
+                                {% elif result.consequences_victime == 2 %}Conséquences psychologiques
+                                {% elif result.consequences_victime == -1 %}Aucun impact mentionné
+                                {% else %}Non défini
+                                {% endif %}
+                            </small>
+                            {% if result.consequences_victime_ex and result.consequences_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.consequences_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Raw GPT Response -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#rawResponse" aria-expanded="false">
+                    📝 Voir la réponse brute de GPT
+                </button>
+            </div>
+            <div class="collapse" id="rawResponse">
+                <div class="card-body">
+                    <pre style="white-space: pre-wrap; font-size: 0.85em;">{{ result.classification_result }}</pre>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Analyse GPT non disponible</strong><br>
+            L'article pourrait dépasser la limite de tokens ou une erreur s'est produite.
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{{ url_for('single_article') }}" class="btn btn-primary btn-lg me-md-2">
+                🔄 Analyser un autre article
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+                🏠 Retour à l'accueil
+            </a>
+        </div>
+        <br>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-3">
+        <!-- Configuration Used -->
+        <div class="card">
+            <div class="card-body">
+                <h6>⚙️ Configuration utilisée</h6>
+                <small class="text-muted">
+                    <strong>Modèle:</strong> {{ config.model }}<br>
+                    {% if config.model and config.model.startswith('gpt-5') %}
+                        <!-- GPT-5 Parameters -->
+                        <strong>Tokens de completion max:</strong> {{ config.max_completion_tokens }}<br>
+                        <strong>Effort de raisonnement:</strong> {{ config.reasoning_effort }}<br>
+                        <strong>Verbosité:</strong> {{ config.verbosity }}<br>
+                        <span class="badge bg-success">GPT-5 - Paramètres avancés</span>
+                    {% else %}
+                        <!-- GPT-4 Parameters -->
+                        <strong>Tokens max:</strong> {{ config.max_tokens }}<br>
+                        <strong>Température:</strong> {{ config.temperature }}<br>
+                        <strong>Top P:</strong> {{ config.top_p }}<br>
+                        <strong>Pénalité de fréquence:</strong> {{ config.frequency_penalty }}<br>
+                        <strong>Pénalité de présence:</strong> {{ config.presence_penalty }}<br>
+                        <span class="badge bg-primary">GPT-4 - Paramètres traditionnels</span>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6>📊 Résumé rapide</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small><strong>Critères NLP:</strong> {{ [result.agence, result.en_lien_avec_affaire, result.mention_feminicide, result.sante_mentale, result.substance_psychotrope, result.animalisant, result.sideration, result.culture_du_viol, result.soustendent_violences, result.desc_agresseur]|select('equalto', 1)|list|length }}/10 détectés</small>
+                </div>
+                <div class="mb-2">
+                    <small><strong>Vocabulaire:</strong> 
+                        <span class="badge badge-sm {% if result.vocabulaire == 1 %}bg-success{% elif result.vocabulaire == -1 %}bg-danger{% else %}bg-warning{% endif %}">
+                            {% if result.vocabulaire == 1 %}Positif{% elif result.vocabulaire == -1 %}Minimisant{% else %}Neutre{% endif %}
+                        </span>
+                    </small>
+                </div>
+                <div class="mb-2">
+                    <small><strong>Validité:</strong> 
+                        <span class="badge badge-sm {% if result.validite == 1 %}bg-success{% elif result.validite == -1 %}bg-danger{% else %}bg-warning{% endif %}">
+                            {% if result.validite == 1 %}Élevée{% elif result.validite == -1 %}Faible{% else %}Moyenne{% endif %}
+                        </span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge-sm {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

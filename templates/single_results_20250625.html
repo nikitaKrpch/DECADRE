@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}Résultats d'analyse{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-9">
+        <h2>📊 Résultats d'analyse de l'article</h2>
+        
+        <!-- Article Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>📄 Article analysé</h5>
+            </div>
+            <div class="card-body">
+                <h6><strong>Titre:</strong> {{ article_data.title }}</h6>
+                {% if article_data.description %}
+                <p><strong>Chapeau:</strong> {{ article_data.description[:200] }}{% if article_data.description|length > 200 %}...{% endif %}</p>
+                {% endif %}
+                <p><strong>Contenu:</strong> {{ article_data.content[:300] }}{% if article_data.content|length > 300 %}...{% endif %}</p>
+                <small class="text-muted">
+                    Caractères total: {{ (article_data.title|length + article_data.description|length + article_data.content|length) }}
+                </small>
+            </div>
+        </div>
+
+        <!-- Analysis Results in 3 columns -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🔍 Résultats de l'analyse NLP</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Column 1: Basic Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-3">📋 Analyse de base</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Article provient d'une agence:</strong>
+                            <span class="badge {% if result.agence == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.agence == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.agence_ex and result.agence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.agence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>En lien avec une affaire:</strong>
+                            <span class="badge {% if result.en_lien_avec_affaire == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.en_lien_avec_affaire == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.en_lien_avec_affaire_ex and result.en_lien_avec_affaire_ex != '-' %}
+                            <br><small class="text-muted">{{ result.en_lien_avec_affaire_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Mention féminicide:</strong>
+                            <span class="badge {% if result.mention_feminicide == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.mention_feminicide == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.mention_feminicide_ex and result.mention_feminicide_ex != '-' %}
+                            <br><small class="text-muted">{{ result.mention_feminicide_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Taille de l'article:</strong>
+                            <span class="badge 
+                                {% if result.taille == 1 %}bg-info
+                                {% elif result.taille == 2 %}bg-primary
+                                {% else %}bg-dark{% endif %}">
+                                {% if result.taille == 1 %}Court (≤1000)
+                                {% elif result.taille == 2 %}Moyen (≤4000)
+                                {% else %}Long (>4000){% endif %}
+                            </span>
+                            <br><small class="text-muted">{{ result.taille_ex }} caractères</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2: Content Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-warning mb-3">🧠 Analyse du contenu</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Le vocabulaire:</strong>
+                            <span class="badge 
+                                {% if result.vocabulaire == 1 %}bg-success
+                                {% elif result.vocabulaire == -1 %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {% if result.vocabulaire == 1 %}Positif
+                                {% elif result.vocabulaire == -1 %}Minimisant
+                                {% else %}Neutre{% endif %}
+                            </span>
+                            {% if result.vocabulaire == 1 %}
+                            <br><small class="text-muted">vocs_violence > 0 and vocs_minimisant = 0</small>
+                            {% elif result.vocabulaire == -1 %}
+                            <br><small class="text-muted">vocs_minimisant > vocs_violence</small>
+                            {% elif result.vocabulaire == 0 %}
+                            <br><small class="text-muted">vocs_minimisant < vocs_violence</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Santé mentale mentionnée:</strong>
+                            <span class="badge {% if result.sante_mentale == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.sante_mentale == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.sante_mentale_ex and result.sante_mentale_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sante_mentale_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Substances psychotropes:</strong>
+                            <span class="badge {% if result.substance_psychotrope == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.substance_psychotrope == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.substance_psychotrope_ex and result.substance_psychotrope_ex != '-' %}
+                            <br><small class="text-muted">{{ result.substance_psychotrope_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Animalisation présente:</strong>
+                            <span class="badge {% if result.animalisant == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.animalisant == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.animalisant_ex and result.animalisant_ex != '-' %}
+                            <br><small class="text-muted">{{ result.animalisant_ex }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Behavioral Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-danger mb-3">⚠️ Analyse comportementale</h6>
+                        
+                        <div class="mb-3">
+                            <strong>Processus de sidération:</strong>
+                            <span class="badge {% if result.sideration == 1 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {% if result.sideration == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.sideration_ex and result.sideration_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sideration_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Culture du viol:</strong>
+                            <span class="badge {% if result.culture_du_viol == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.culture_du_viol == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.culture_du_viol_ex and result.culture_du_viol_ex != '-' %}
+                            <br><small class="text-muted">{{ result.culture_du_viol_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Mécanismes sous-tendant les violences:</strong>
+                            <span class="badge 
+                                {% if result.soustendent_violences == 1 %}bg-danger
+                                {% elif result.soustendent_violences == 0 %}bg-warning
+                                {% else %}bg-success{% endif %}">
+                                {% if result.soustendent_violences == 1 %}Présents
+                                {% elif result.soustendent_violences == 0 %}Partiels
+                                {% else %}Absents{% endif %}
+                            </span>
+                            {% if result.soustendent_violences_ex and result.soustendent_violences_ex != '-' %}
+                            <br><small class="text-muted">{{ result.soustendent_violences_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Description agresseur:</strong>
+                            <span class="badge {% if result.desc_agresseur == 0 %}bg-warning{% else %}bg-success{% endif %}">
+                                {% if result.desc_agresseur == 0 %}Problématique{% else %}Appropriée{% endif %}
+                            </span>
+                            {% if result.desc_agresseur_ex and result.desc_agresseur_ex != '-' %}
+                            <br><small class="text-muted">{{ result.desc_agresseur_ex }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Validité des informations:</strong>
+                            <span class="badge 
+                                {% if result.validite == 1 %}bg-success
+                                {% elif result.validite == -1 %}bg-danger
+                                {% else %}bg-warning{% endif %}">
+                                {% if result.validite == 1 %}Élevée
+                                {% elif result.validite == -1 %}Faible
+                                {% else %}Moyenne{% endif %}
+                            </span>
+                            {% if result.validite_ex and result.validite_ex != '-' %}
+                            <br><small class="text-muted">{{ result.validite_ex }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complete GPT Analysis Results -->
+        {% if result.classification_result and result.classification_result != '-' %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>🤖 Analyse GPT-4 complète</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Column 1: Violence Classification -->
+                    <div class="col-md-4">
+                        <h6 class="text-primary mb-3">🎯 Classification des violences</h6>
+                        
+                        {% if result.type_violence and result.type_violence != '-' %}
+                        <div class="mb-3">
+                            <strong>Type de violence:</strong>
+                            <span class="badge bg-primary">{{ result.type_violence }}</span>
+                            {% if result.type_violence_ex and result.type_violence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.type_violence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.cadre_violence and result.cadre_violence != '-' %}
+                        <div class="mb-3">
+                            <strong>Cadre de violence:</strong>
+                            <span class="badge bg-primary">{{ result.cadre_violence }}</span>
+                            {% if result.cadre_violence_ex and result.cadre_violence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.cadre_violence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.feminicide and result.feminicide != '-' %}
+                        <div class="mb-3">
+                            <strong>Féminicide:</strong>
+                            <span class="badge {% if result.feminicide == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ result.feminicide }}
+                            </span>
+                            {% if result.feminicide_ex and result.feminicide_ex != '-' %}
+                            <br><small class="text-muted">{{ result.feminicide_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.escalade_violences and result.escalade_violences != '-' %}
+                        <div class="mb-3">
+                            <strong>Escalade violences:</strong>
+                            <span class="badge {% if result.escalade_violences == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ result.escalade_violences }}
+                            </span>
+                            {% if result.escalade_violences_ex and result.escalade_violences_ex != '-' %}
+                            <br><small class="text-muted">{{ result.escalade_violences_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Add missing GPT-4 fields for violence classification -->
+                        {% if result.tentative_meurtre and result.tentative_meurtre != '-' %}
+                        <div class="mb-3">
+                            <strong>Tentative de meurtre:</strong>
+                            <span class="badge {% if result.tentative_meurtre == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.tentative_meurtre == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.tentative_meurtre_ex and result.tentative_meurtre_ex != '-' %}
+                            <br><small class="text-muted">{{ result.tentative_meurtre_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.violences_conjugales and result.violences_conjugales != '-' %}
+                        <div class="mb-3">
+                            <strong>Violences conjugales:</strong>
+                            <span class="badge {% if result.violences_conjugales == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.violences_conjugales == 1 %}Oui{% else %}Non{% endif %}
+                            </span>
+                            {% if result.violences_conjugales_ex and result.violences_conjugales_ex != '-' %}
+                            <br><small class="text-muted">{{ result.violences_conjugales_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Column 2: Journalistic Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-success mb-3">📰 Analyse journalistique</h6>
+                        
+                        {% if result.sources and result.sources != '-' %}
+                        <div class="mb-3">
+                            <strong>Sources:</strong>
+                            <span class="badge bg-info">{{ result.sources }}</span>
+                            {% if result.sources_ex and result.sources_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sources_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.hierarchisation and result.hierarchisation != '-' %}
+                        <div class="mb-3">
+                            <strong>Hiérarchisation:</strong>
+                            <span class="badge bg-warning">{{ result.hierarchisation }}</span>
+                            {% if result.hierarchisation_ex and result.hierarchisation_ex != '-' %}
+                            <br><small class="text-muted">{{ result.hierarchisation_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.statistiques and result.statistiques != '-' %}
+                        <div class="mb-3">
+                            <strong>Statistiques:</strong>
+                            <span class="badge bg-success">{{ result.statistiques }}</span>
+                            {% if result.statistiques_ex and result.statistiques_ex != '-' %}
+                            <br><small class="text-muted">{{ result.statistiques_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Add missing GPT-4 fields for journalistic analysis -->
+                        {% if result.traitement_media and result.traitement_media != '-' %}
+                        <div class="mb-3">
+                            <strong>Traitement médiatique:</strong>
+                            <span class="badge bg-info">{{ result.traitement_media }}</span>
+                            {% if result.traitement_media_ex and result.traitement_media_ex != '-' %}
+                            <br><small class="text-muted">{{ result.traitement_media_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.sensationnalisme and result.sensationnalisme != '-' %}
+                        <div class="mb-3">
+                            <strong>Sensationnalisme:</strong>
+                            <span class="badge {% if result.sensationnalisme == 1 %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {% if result.sensationnalisme == 1 %}Présent{% else %}Absent{% endif %}
+                            </span>
+                            {% if result.sensationnalisme_ex and result.sensationnalisme_ex != '-' %}
+                            <br><small class="text-muted">{{ result.sensationnalisme_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.context_social and result.context_social != '-' %}
+                        <div class="mb-3">
+                            <strong>Contexte social:</strong>
+                            <span class="badge bg-info">{{ result.context_social }}</span>
+                            {% if result.context_social_ex and result.context_social_ex != '-' %}
+                            <br><small class="text-muted">{{ result.context_social_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Column 3: Victim & Perpetrator Analysis -->
+                    <div class="col-md-4">
+                        <h6 class="text-danger mb-3">👥 Analyse des acteurs</h6>
+                        
+                        {% if result.desc_victime and result.desc_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>Description victime:</strong>
+                            <span class="badge bg-info">{{ result.desc_victime }}</span>
+                            {% if result.desc_victime_ex and result.desc_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.desc_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Add remaining missing GPT-4 fields -->
+                        {% if result.culpabilisation_victime and result.culpabilisation_victime != '-' %}
+                        <div class="mb-3">
+                            <strong>Culpabilisation victime:</strong>
+                            <span class="badge {% if result.culpabilisation_victime == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.culpabilisation_victime == 1 %}Présente{% else %}Absente{% endif %}
+                            </span>
+                            {% if result.culpabilisation_victime_ex and result.culpabilisation_victime_ex != '-' %}
+                            <br><small class="text-muted">{{ result.culpabilisation_victime_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.justification_violence and result.justification_violence != '-' %}
+                        <div class="mb-3">
+                            <strong>Justification violence:</strong>
+                            <span class="badge {% if result.justification_violence == 1 %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {% if result.justification_violence == 1 %}Présente{% else %}Absente{% endif %}
+                            </span>
+                            {% if result.justification_violence_ex and result.justification_violence_ex != '-' %}
+                            <br><small class="text-muted">{{ result.justification_violence_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.impact_psychologique and result.impact_psychologique != '-' %}
+                        <div class="mb-3">
+                            <strong>Impact psychologique:</strong>
+                            <span class="badge bg-warning">{{ result.impact_psychologique }}</span>
+                            {% if result.impact_psychologique_ex and result.impact_psychologique_ex != '-' %}
+                            <br><small class="text-muted">{{ result.impact_psychologique_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.prevention_mesures and result.prevention_mesures != '-' %}
+                        <div class="mb-3">
+                            <strong>Mesures de prévention:</strong>
+                            <span class="badge {% if result.prevention_mesures == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.prevention_mesures == 1 %}Mentionnées{% else %}Absentes{% endif %}
+                            </span>
+                            {% if result.prevention_mesures_ex and result.prevention_mesures_ex != '-' %}
+                            <br><small class="text-muted">{{ result.prevention_mesures_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if result.ressources_aide and result.ressources_aide != '-' %}
+                        <div class="mb-3">
+                            <strong>Ressources d'aide:</strong>
+                            <span class="badge {% if result.ressources_aide == 1 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if result.ressources_aide == 1 %}Mentionnées{% else %}Absentes{% endif %}
+                            </span>
+                            {% if result.ressources_aide_ex and result.ressources_aide_ex != '-' %}
+                            <br><small class="text-muted">{{ result.ressources_aide_ex }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Raw GPT Response -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#rawResponse" aria-expanded="false">
+                    📝 Voir la réponse brute de GPT-4
+                </button>
+            </div>
+            <div class="collapse" id="rawResponse">
+                <div class="card-body">
+                    <pre style="white-space: pre-wrap; font-size: 0.85em;">{{ result.classification_result }}</pre>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Analyse GPT non disponible</strong><br>
+            L'article pourrait dépasser la limite de tokens ou une erreur s'est produite.
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{{ url_for('single_article') }}" class="btn btn-primary btn-lg me-md-2">
+                🔄 Analyser un autre article
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+                🏠 Retour à l'accueil
+            </a>
+        </div>
+        <br>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-md-3">
+        <!-- Configuration Used -->
+        <div class="card">
+            <div class="card-body">
+                <h6>⚙️ Configuration utilisée</h6>
+                <small class="text-muted">
+                    <strong>Modèle:</strong> {{ config.model }}<br>
+                    <strong>Tokens max:</strong> {{ config.max_tokens }}<br>
+                    <strong>Température:</strong> {{ config.temperature }}<br>
+                    <strong>Top P:</strong> {{ config.top_p }}
+                </small>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6>📊 Résumé rapide</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small><strong>Critères NLP:</strong> {{ [result.agence, result.en_lien_avec_affaire, result.mention_feminicide, result.sante_mentale, result.substance_psychotrope, result.animalisant, result.sideration, result.culture_du_viol, result.soustendent_violences, result.desc_agresseur]|select('equalto', 1)|list|length }}/10 détectés</small>
+                </div>
+                <div class="mb-2">
+                    <small><strong>Vocabulaire:</strong> 
+                        <span class="badge badge-sm {% if result.vocabulaire == 1 %}bg-success{% elif result.vocabulaire == -1 %}bg-danger{% else %}bg-warning{% endif %}">
+                            {% if result.vocabulaire == 1 %}Positif{% elif result.vocabulaire == -1 %}Minimisant{% else %}Neutre{% endif %}
+                        </span>
+                    </small>
+                </div>
+                <div class="mb-2">
+                    <small><strong>Validité:</strong> 
+                        <span class="badge badge-sm {% if result.validite == 1 %}bg-success{% elif result.validite == -1 %}bg-danger{% else %}bg-warning{% endif %}">
+                            {% if result.validite == 1 %}Élevée{% elif result.validite == -1 %}Faible{% else %}Moyenne{% endif %}
+                        </span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge-sm {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

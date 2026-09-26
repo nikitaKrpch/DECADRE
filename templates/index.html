@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>AID-GEM</h1>
+<p class="lead">Bienvenue dans le système d'analyse des actualités!</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Article unique</h5>
+                <p class="card-text">Traiter un article à la fois</p>
+                <a href="{{ url_for('single_article') }}" class="btn btn-primary">Commencer</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Traitement par lots</h5>
+                <p class="card-text">Téléverser un fichier CSV pour traitement par lots</p>
+                <a href="{{ url_for('batch_processing') }}" class="btn btn-success">Téléverser CSV</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('test_route') }}" class="btn btn-outline-secondary">Tester le système</a>
+</div>
+{% endblock %}

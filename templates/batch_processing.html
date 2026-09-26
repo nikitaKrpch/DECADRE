@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Traitement par lots{% endblock %}
+
+{% block content %}
+<h2>Traitement par lots</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h4>📊 Téléverser un fichier CSV pour le traitement par lots</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('upload_batch_file') }}" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="file" class="form-label">Fichier CSV *</label>
+                <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                <div class="form-text d-flex justify-content-between align-items-center">
+                    <span><strong>Colonnes CSV requises:</strong> no, url, article_title, article_desc, article_content, semaine, média, article repris, rubrique</span>
+                    <a href="{{ url_for('download_template') }}" class="btn btn-outline-primary btn-sm" download>
+                        📥 Télécharger le modèle CSV
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>🤖 Paramètres des LLMs</h5>
+                </div>
+                <div class="card-body">
+                    <!-- GPT-4 Prompt Section (Collapsible) -->
+                    <div class="mb-4">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#promptSectionBatch" aria-expanded="false" aria-controls="promptSectionBatch">
+                            📝 Voir/Modifier le prompt
+                        </button>
+                        <div class="collapse mt-3" id="promptSectionBatch">
+                            <div class="card card-body bg-light">
+                                <label for="gpt_prompt_batch" class="form-label">Prompt d'analyse des LLMs</label>
+                                <textarea class="form-control" id="gpt_prompt" name="gpt_prompt" rows="20" 
+                                    style="font-family: monospace; font-size: 0.9em;">{{ default_prompt }}</textarea>
+                                <div class="form-text">
+                                    <small class="text-muted">💡 Ceci est le prompt par défaut envoyé au LLM (par exemple,  GPT-4). Vous pouvez le modifier pour personnaliser l'analyse de tous les articles du lot.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection -->
+                    <div class="mb-4">
+                        <label for="model_batch" class="form-label">Modèle</label>
+                        <select class="form-select" id="model_batch" name="model" onchange="toggleBatchModelParameters()">
+                            <option value="gpt-5" {% if default_model == 'gpt-5' %}selected{% endif %}>GPT-5</option>
+                            <option value="gpt-4" {% if default_model == 'gpt-4' %}selected{% endif %}>GPT-4</option>
+                        </select>
+                        <div class="form-text">
+                            <small class="text-muted" id="batchModelDescription">GPT-5: Nouveau modèle avec contrôles avancés de raisonnement</small>
+                        </div>
+                    </div>
+
+                    <!-- GPT-4 Parameters -->
+                    <div id="batchGpt4Parameters" class="model-parameters">
+                        <div class="alert alert-info">
+                            <strong>🔧 Paramètres GPT-4</strong> - Contrôles fins pour la génération de texte
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="max_tokens_batch" class="form-label">Tokens max</label>
+                                    <input type="number" class="form-control" id="max_tokens_batch" name="max_tokens" 
+                                           value="{{ default_max_tokens }}" min="100" max="4000">
+                                    <div class="form-text">
+                                        <small class="text-muted">Nombre maximum de tokens dans la réponse</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="temperature_batch" class="form-label">Température</label>
+                                    <input type="number" class="form-control" id="temperature_batch" name="temperature" 
+                                           value="{{ default_temperature }}" min="0" max="2" step="0.1">
+                                    <div class="form-text">
+                                        <small class="text-muted">Contrôle la créativité (0 = déterministe, 2 = très créatif)</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="top_p_batch" class="form-label">Top P</label>
+                                    <input type="number" class="form-control" id="top_p_batch" name="top_p" 
+                                           value="{{ default_top_p }}" min="0" max="1" step="0.1">
+                                    <div class="form-text">
+                                        <small class="text-muted">Filtre les tokens par probabilité cumulative</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="frequency_penalty_batch" class="form-label">Pénalité de fréquence</label>
+                                    <input type="number" class="form-control" id="frequency_penalty_batch" name="frequency_penalty" 
+                                           value="{{ default_frequency_penalty }}" min="-2" max="2" step="0.1">
+                                    <div class="form-text">
+                                        <small class="text-muted">Réduit la répétition de mots fréquents</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="presence_penalty_batch" class="form-label">Pénalité de présence</label>
+                                    <input type="number" class="form-control" id="presence_penalty_batch" name="presence_penalty" 
+                                           value="{{ default_presence_penalty }}" min="-2" max="2" step="0.1">
+                                    <div class="form-text">
+                                        <small class="text-muted">Encourage l'utilisation de nouveaux mots</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GPT-5 Parameters -->
+                    <div id="batchGpt5Parameters" class="model-parameters" style="display: none;">
+                        <div class="alert alert-success">
+                            <strong>🚀 Paramètres GPT-5</strong> - Nouveau modèle avec contrôles avancés
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="max_completion_tokens_batch" class="form-label">Tokens de complétion max</label>
+                                    <input type="number" class="form-control" id="max_completion_tokens_batch" name="max_completion_tokens" 
+                                           value="{{ default_max_completion_tokens }}" min="1000" max="10000">
+                                    <div class="form-text">
+                                        <small class="text-muted">Nombre maximum de tokens dans la réponse GPT-5</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reasoning_effort_batch" class="form-label">Effort de raisonnement</label>
+                                    <select class="form-select" id="reasoning_effort_batch" name="reasoning_effort">
+                                        <option value="minimal" {% if default_reasoning_effort == 'minimal' %}selected{% endif %}>Minimal</option>
+                                        <option value="medium" {% if default_reasoning_effort == 'medium' %}selected{% endif %}>Moyen</option>
+                                        <option value="high" {% if default_reasoning_effort == 'high' %}selected{% endif %}>Élevé</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <small class="text-muted">Niveau de raisonnement appliqué par le modèle</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="verbosity_batch" class="form-label">Verbosité</label>
+                                    <select class="form-select" id="verbosity_batch" name="verbosity">
+                                        <option value="minimal" {% if default_verbosity == 'minimal' %}selected{% endif %}>Minimale</option>
+                                        <option value="medium" {% if default_verbosity == 'medium' %}selected{% endif %}>Moyenne</option>
+                                        <option value="high" {% if default_verbosity == 'high' %}selected{% endif %}>Élevée</option>
+                                    </select>
+                                    <div class="form-text">
+                                        <small class="text-muted">Niveau de détail dans les réponses</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="alert alert-warning">
+                                        <small><strong>Note:</strong> GPT-5 n'utilise pas les paramètres traditionnels comme temperature, top_p, etc.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <button type="submit" class="btn btn-success btn-lg me-md-2">
+                    🚀 Téléverser et traiter
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📋 Exigences du format CSV</h5>
+                <p>Votre fichier CSV doit contenir ces colonnes:</p>
+                <ul>
+                    <li><code>no</code> - La numéro de l'article</li>
+                    <li><code>url</code> - L'url de l'article</li>
+                    <li><code>article_title</code> - Le titre de l'article</li>
+                    <li><code>article_desc</code> - Chapô de l'article</li>
+                    <li><code>article_content</code> - Texte complet de l'article</li>
+                    <li><code>semaine</code> -La numéro de la semaine de publication de l'article</li>
+                    <li><code>média</code> - Média de l'article</li>
+                    <li><code>article repris</code> - D'où provient l'article ?</li>
+                    <li><code>rubrique</code> - La rubrique de l'article</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">⚡ Informations sur le traitement</h5>
+                <ul>
+                    <li><strong>Temps de traitement:</strong> ~3-4 minutes (20 articles)</li>
+                    <li><strong>Gros fichiers:</strong> de plus de 2'000 mots ne seront pas traités</li>
+                    <li><strong>Résultats:</strong> Téléchargement en CSV une fois terminé</li>
+                    <li><strong>Statut:</strong> Suivi de progression en temps réel</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Model parameter transitions */
+.model-parameters {
+    transition: all 0.3s ease-in-out;
+}
+
+.model-parameters.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+</style>
+
+<script>
+// Toggle between GPT-4 and GPT-5 parameters for batch processing
+function toggleBatchModelParameters() {
+    const selectedModel = document.getElementById('model_batch').value;
+    const gpt4Params = document.getElementById('batchGpt4Parameters');
+    const gpt5Params = document.getElementById('batchGpt5Parameters');
+    const modelDescription = document.getElementById('batchModelDescription');
+    
+    if (selectedModel === 'gpt-5') {
+        // Show GPT-5 parameters, hide GPT-4
+        gpt4Params.style.display = 'none';
+        gpt5Params.style.display = 'block';
+        modelDescription.textContent = 'GPT-5: Nouveau modèle avec contrôles avancés de raisonnement';
+    } else {
+        // Show GPT-4 parameters, hide GPT-5
+        gpt4Params.style.display = 'block';
+        gpt5Params.style.display = 'none';
+        modelDescription.textContent = 'GPT-4: Modèle stable avec paramètres traditionnels';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleBatchModelParameters();
+});
+</script>
+
+{% endblock %}

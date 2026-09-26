@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}Statut du traitement{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Statut du traitement par lots</h2>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    📁 <span id="filename">{{ job.input_filename }}</span>
+                    <span id="status-badge" class="badge ms-2 
+                        {% if job.status == 'completed' %}bg-success
+                        {% elif job.status == 'failed' %}bg-danger
+                        {% elif job.status == 'processing' %}bg-warning
+                        {% elif job.status == 'cancelled' %}bg-secondary
+                        {% else %}bg-info{% endif %}">
+                        {% if job.status == 'completed' %}Terminé
+                        {% elif job.status == 'failed' %}Échoué
+                        {% elif job.status == 'processing' %}En cours
+                        {% elif job.status == 'cancelled' %}Annulé
+                        {% elif job.status == 'queued' %}En attente
+                        {% else %}{{ job.status|title }}{% endif %}
+                    </span>
+                </h5>
+                
+                <!-- Progress Bar -->
+                <div class="mb-3">
+                    <label class="form-label">Progression</label>
+                    <div class="progress" style="height: 25px;">
+                        <div id="progress-bar" 
+                             class="progress-bar {% if job.status == 'processing' %}progress-bar-striped progress-bar-animated bg-warning{% elif job.status == 'completed' %}bg-success{% elif job.status == 'failed' %}bg-danger{% else %}bg-info{% endif %}" 
+                             role="progressbar" 
+                             style="width: {{ job.progress }}%">
+                            <span id="progress-text">{{ job.progress }}%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status Information -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Articles traités:</strong> 
+                           <span id="processed-count">{{ job.processed_articles }}</span> / 
+                           <span id="total-count">{{ job.total_articles }}</span>
+                        </p>
+                        <p><strong>Statut :</strong> <span id="status-text">
+                            {% if job.status == 'completed' %}Terminé
+                            {% elif job.status == 'failed' %}Échoué
+                            {% elif job.status == 'processing' %}En cours
+                            {% elif job.status == 'cancelled' %}Annulé
+                            {% elif job.status == 'queued' %}En attente
+                            {% else %}{{ job.status|title }}{% endif %}
+                        </span></p>
+                        <p><strong>Démarré:</strong> {{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Durée:</strong> <span id="duration">
+                            {% if job.end_time and job.start_time %}
+                                {% set duration_seconds = (job.end_time - job.start_time).total_seconds() %}
+                                {{ (duration_seconds // 60)|int }}m {{ (duration_seconds % 60)|int }}s
+                            {% else %}
+                                Calcul en cours...
+                            {% endif %}
+                        </span></p>
+                        {% if job.end_time %}
+                        <p><strong>Terminé:</strong> {{ job.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Error Message -->
+                {% if job.error %}
+                <div class="alert alert-danger">
+                    <strong>Erreur:</strong> {{ job.error }}
+                </div>
+                {% endif %}
+                
+                <!-- Success Message -->
+                {% if job.status == 'completed' %}
+                <div class="alert alert-success">
+                    <strong>✅ Traitement terminé!</strong> Vos résultats d'analyse sont prêts au téléchargement.
+                </div>
+                {% endif %}
+                
+                <!-- Processing Message -->
+                {% if job.status == 'processing' %}
+                <div class="alert alert-info">
+                    <strong>🔄 Traitement en cours...</strong> Veuillez ne pas fermer cette page. Les résultats seront disponibles à la fin du traitement.
+                </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <div class="mt-4">
+                    {% if job.status == 'completed' %}
+                        <a href="{{ url_for('download_results', job_id=job_id) }}" 
+                           class="btn btn-success btn-lg me-3">
+                            📥 Télécharger les résultats
+                        </a>
+                    {% endif %}
+                    
+                    {% if job.status == 'processing' %}
+                        <form method="POST" action="{{ url_for('cancel_job', job_id=job_id) }}" 
+                              style="display: inline;" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce traitement?')">
+                            <button type="submit" class="btn btn-warning me-3">
+                                ⏹️ Annuler le traitement
+                            </button>
+                        </form>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('batch_processing') }}" class="btn btn-secondary">
+                        📊 Traiter un autre fichier
+                    </a>
+                    
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        🏠 Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Processing Details Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>📊 Détails du traitement</h6>
+            </div>
+            <div class="card-body">
+                <div id="processing-details">
+                    <p><strong>Modèle:</strong> {{ job.config.model }}</p>
+                    {% if job.config.model and job.config.model.startswith('gpt-5') %}
+                        <!-- GPT-5 Parameters -->
+                        <p><strong>Tokens de complétion max:</strong> {{ job.config.max_completion_tokens }}</p>
+                        <p><strong>Effort de raisonnement:</strong> {{ job.config.reasoning_effort }}</p>
+                        <p><strong>Verbosité:</strong> {{ job.config.verbosity }}</p>
+                        <span class="badge bg-success">GPT-5 - Paramètres avancés</span>
+                    {% else %}
+                        <!-- GPT-4 Parameters -->
+                        <p><strong>Tokens max:</strong> {{ job.config.max_tokens }}</p>
+                        <p><strong>Température:</strong> {{ job.config.temperature }}</p>
+                        <p><strong>Top P:</strong> {{ job.config.top_p }}</p>
+                        <p><strong>Pénalité de fréquence:</strong> {{ job.config.frequency_penalty }}</p>
+                        <p><strong>Pénalité de présence:</strong> {{ job.config.presence_penalty }}</p>
+                        <span class="badge bg-primary">GPT-4 - Paramètres traditionnels</span>
+                    {% endif %}
+                    
+                    <hr>
+                    <p><strong>ID du traitement:</strong> <small>{{ job_id }}</small></p>
+                </div>
+                
+                {% if job.status == 'processing' %}
+                <div class="mt-3">
+                    <h6>⏱️ Mises à jour en temps réel</h6>
+                    <div id="live-stats">
+                        <small class="text-muted">Mise à jour toutes les 3 secondes...</small>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Tips Card -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>💡 Conseils</h6>
+                <ul>
+                    <li>Le système capable de traiter jusqu'à <strong>10</strong> articles simultanément</li>
+                    <li>Le traitement prend environ <strong>3 à 4 minutes</strong> avec GPT-5 (20 articles)</li>
+                    <li>Les articles de plus de <strong>2'000</strong> mots ne seront pas traités par les LLMs</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let jobId = '{{ job_id }}';
+let startTime = new Date('{{ job.start_time.isoformat() }}');
+let updateInterval;
+
+const statusTranslations = {
+    'completed': 'Terminé',
+    'failed': 'Échoué',
+    'processing': 'En cours',
+    'cancelled': 'Annulé',
+    'queued': 'En attente'
+};
+
+function updateStatus() {
+    console.log(`Fetching status for job: ${jobId}`);
+    
+    fetch(`/api/job_status/${jobId}`)
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Status data received:', data);
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            if (progressBar && progressText) {
+                progressBar.style.width = data.progress + '%';
+                progressText.textContent = data.progress + '%';
+            }
+            
+            // Update counters
+            const processedCount = document.getElementById('processed-count');
+            const totalCount = document.getElementById('total-count');
+            const statusText = document.getElementById('status-text');
+            
+            if (processedCount) processedCount.textContent = data.processed_articles;
+            if (totalCount) totalCount.textContent = data.total_articles;
+            
+            // Update status text with French translation
+            const translatedStatus = statusTranslations[data.status] || data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            if (statusText) statusText.textContent = translatedStatus;
+            
+            // Update status badge
+            const badge = document.getElementById('status-badge');
+            if (badge) {
+                badge.textContent = translatedStatus;
+                badge.className = 'badge ms-2 ';
+                
+                if (data.status === 'completed') {
+                    console.log('Job completed! Preparing to reload page...');
+                    badge.className += 'bg-success';
+                    if (progressBar) {
+                        progressBar.className = 'progress-bar bg-success';
+                    }
+                    
+                    // Update final duration
+                    updateDuration(data);
+                    
+                    // Stop polling
+                    clearInterval(updateInterval);
+                    showCompletionState();
+                   
+                } else if (data.status === 'failed') {
+                    badge.className += 'bg-danger';
+                    if (progressBar) {
+                        progressBar.className = 'progress-bar bg-danger';
+                    }
+                    clearInterval(updateInterval);
+                    showFailureState(data.error);
+                    
+                } else if (data.status === 'processing') {
+                    badge.className += 'bg-warning';
+                    if (progressBar) {
+                        progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+                    }
+                } else {
+                    badge.className += 'bg-info';
+                }
+            }
+            
+            // Update duration and ETA
+            updateDuration(data);
+        })
+        /*
+        .catch(error => {
+            console.error('Error fetching status:', error);
+            // If there's an error fetching status, try to reload the page
+            setTimeout(() => {
+                console.log('Reloading page due to fetch error...');
+                window.location.reload();
+            }, 5000);
+        });
+        */
+}
+
+function updateDuration(data) {
+    const durationElement = document.getElementById('duration');
+    if (!durationElement) return;
+    
+    if (data.duration) {
+        const minutes = Math.floor(data.duration / 60);
+        const seconds = data.duration % 60;
+        durationElement.textContent = `${minutes}m ${seconds}s`;
+        
+        // Calculate ETA for processing jobs
+        if (data.status === 'processing' && data.processed_articles > 0) {
+            const etaElement = document.getElementById('eta');
+            if (etaElement) {
+                const avgTimePerArticle = data.duration / data.processed_articles;
+                const remainingArticles = data.total_articles - data.processed_articles;
+                const etaSeconds = Math.round(avgTimePerArticle * remainingArticles);
+                const etaMinutes = Math.floor(etaSeconds / 60);
+                const etaSecondsRemainder = etaSeconds % 60;
+                etaElement.textContent = `~${etaMinutes}m ${etaSecondsRemainder}s`;
+            }
+        }
+    } else {
+        // Calculate duration manually
+        const now = new Date();
+        const startTime = new Date('{{ job.start_time.strftime("%Y-%m-%dT%H:%M:%S") }}');
+        const durationSeconds = Math.floor((now - startTime) / 1000);
+        const minutes = Math.floor(durationSeconds / 60);
+        const seconds = durationSeconds % 60;
+        durationElement.textContent = `${minutes}m ${seconds}s`;
+    }
+}
+
+function showCompletionState() {
+    console.log('Showing completion state...');
+    
+    // REPLACE the processing message with success message (same location)
+    const processingAlert = document.querySelector('.alert-info');
+    if (processingAlert) {
+        processingAlert.className = 'alert alert-success';
+        processingAlert.innerHTML = '<strong>✅ Traitement terminé!</strong> Vos résultats d\'analyse sont prêts au téléchargement.';
+    }
+    
+    // REPLACE the cancel button with download button (same location)
+    const cancelForm = document.querySelector('form[action*="cancel_job"]');
+    if (cancelForm) {
+        // Create download button to replace cancel form
+        const downloadButton = document.createElement('a');
+        downloadButton.href = '{{ url_for("download_results", job_id=job_id) }}';
+        downloadButton.className = 'btn btn-success btn-lg me-3';
+        downloadButton.innerHTML = '📥 Télécharger les résultats';
+        
+        // Replace the cancel form with download button
+        cancelForm.parentNode.replaceChild(downloadButton, cancelForm);
+    }
+    
+    // Hide ETA if it exists (no longer needed)
+    const etaElement = document.getElementById('eta');
+    if (etaElement && etaElement.parentElement) {
+        etaElement.parentElement.style.display = 'none';
+    }
+    
+    console.log('Download button should now be visible in place of cancel button!');
+}
+
+function showFailureState(error) {
+    console.log('Showing failure state...');
+    
+    // Hide processing message
+    const processingAlert = document.querySelector('.alert-info');
+    if (processingAlert) {
+        processingAlert.style.display = 'none';
+    }
+    
+    // Show or create error message
+    let errorAlert = document.querySelector('.alert-danger');
+    if (!errorAlert) {
+        errorAlert = document.createElement('div');
+        errorAlert.className = 'alert alert-danger';
+        
+        // Insert before action buttons
+        const actionButtons = document.querySelector('.mt-4');
+        if (actionButtons) {
+            actionButtons.parentNode.insertBefore(errorAlert, actionButtons);
+        }
+    }
+    errorAlert.innerHTML = `<strong>❌ Erreur:</strong> ${error || 'Une erreur est survenue pendant le traitement.'}`;
+    errorAlert.style.display = 'block';
+    
+    // Hide cancel button
+    const cancelForm = document.querySelector('form[action*="cancel_job"]');
+    if (cancelForm) {
+        cancelForm.style.display = 'none';
+    }
+}
+
+// Start polling if job is not in a final state
+const currentStatus = '{{ job.status }}';
+console.log('Current job status:', currentStatus);
+
+if (currentStatus === 'processing' || currentStatus === 'queued') {
+    console.log('Starting status polling...');
+    updateInterval = setInterval(updateStatus, 3000); // Poll every 3 seconds
+    // Update immediately
+    updateStatus();
+}else if (currentStatus === 'completed') {
+    console.log('Job already completed, showing download button...');
+    showCompletionState();
+} else if (currentStatus === 'failed') {
+    console.log('Job failed, showing error state...');
+    showFailureState('{{ job.error }}');
+}
+</script>
+{% endblock %}

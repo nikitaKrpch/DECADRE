@@ -1,0 +1,185 @@
+csv_file_input: input/input.csv   # Replace with the path to your CSV file
+csv_file_output: output/output_2025.csv   # Replace with the path to your CSV file
+csv_file_input_matching: input_matching.csv   # Replace with the path to your CSV file
+csv_file_output_matching: output_matching.csv   # Replace with the path to your CSV file
+dictionaries_files:
+  - dictionaries/agence.txt
+  - dictionaries/en lien avec une affaire.txt
+  - dictionaries/en lien avec une affaire exclue.txt
+  - dictionaries/mention_feminicide.txt
+  - dictionaries/sante mentale.txt
+  - dictionaries/vocabulaire_violence.txt
+  - dictionaries/vocabulaire_minimisant.txt
+  - dictionaries/substance psychotrope.txt
+  - dictionaries/animalisant.txt
+  - dictionaries/sideration.txt
+  - dictionaries/culture du viol.txt
+  - dictionaries/verb_conditional.txt
+engine: text-davinci-003
+model: gpt-5
+max_tokens: 1500
+max_completion_tokens: 6000
+temperature: 0.3
+top_p: 0.7
+frequency_penalty: 0.5
+presence_penalty: 0.0
+reasoning_effort: medium  # For classification tasks, minimal reasoning is often sufficient
+verbosity: medium  # For concise responses
+prompt: |
+  Bonjour, vous êtes un expert en sociologie. Veuillez lire l’article suivant lié à la violence sexiste et sexuelle, en faire un résumé des points clés, puis répondre aux questions regroupées par thème.
+    
+  Instructions:
+    1) Résumé de l'article :
+        - Résumez les points clés de l'article en vous concentrant sur :
+            - Type de violence
+            - Victimes et agresseurs impliqués
+            - Contexte des violences (domestique, public, etc.)
+            - Dynamiques de pouvoir et témoignages
+            - Conséquences évoquées
+        - Le résumé doit être concis (150 à 200 mots).
+        
+    2) Réponses aux questions :
+      - Les questions sont divisées en 7 groupes thématiques. 
+      - Répondez dans l’ordre, chaque réponse dans un paragraphe distinct.
+      - Commencez chaque réponse par : Question [numéro] : Option [numéro d’option choisie].
+      - Suivez votre choix avec une explication succincte.
+      - Restez précis et choisissez une seule option pour chaque question.
+      - La réponse pour chaque question doit comporter uniquement le numéro d’option représentant le choix.
+
+  Questions à analyser:
+
+  Groupe 1 : Type de violence et Contexte (Questions 1-3)
+      1. [Type de violence] À quelle catégorie appartient le type de violence traité dans l’article ?
+         - Il y a 7 catégories possibles, choisissez une des 7 catégories et expliquez votre choix.
+         - Les 7 catégories sont :
+           1. Violence psychologique
+           2. Violences verbales
+           3. Violences économiques
+           4. Violences physiques
+           5. Violences sexuelles
+           6. Autres ou indéterminé
+           7. féminicide
+           
+      2. [Contexte des violences] Dans quel cadre les violences ont-elles lieu ?
+         - Il y a 4 cadres possibles, choisissez un des 4 cadres et expliquez votre choix.
+         - Les 4 cadres sont :
+           1. Cadre professionnel
+           2. L’espace public, la rue
+           3. Le couple, l’espace domestique
+           4. Autre
+    
+      3. [Mention de féminicide] Cet article mentionne-t-il un féminicide, le meurtre d’une femme ou d’une fille ?
+         - Il y a 2 options à choisir :
+           1. Oui
+           2. Non
+
+  Groupe 2 : Version des faits et Titre (Questions 4-5)
+      4. [Version des faits] Cet article contient-il la version des faits des différents protagonistes, notamment de la victime, de l’agresseur ou/et d’un-e expert-e ?
+         - Il y a 3 options à choisir :
+           1. L’article cite directement ou indirectement des expert-e-s. Les expert-e-s sont des personnes externes à l’affaire appelées par le média ou la cour pour donner leur avis. Par exemple, des médias, des victimes passées ou les avocat-e-s ne sont pas des expert-e-s ; des expert-e-s psychiatres, des politiques, des associations sont des expert-e-s.
+           0. L’article croise la version de la victime et de l’agresseur, ou contient la version de la victime.
+           -1. L’article ne contient que la version de l’agresseur.
+    
+      5. [Titre et chapeau] Le titre et le chapeau de l’article mentionnent-ils les violences ?
+         - Veuillez récupérer le titre et le chapeau de l’article dans les deux premiers paragraphes et faire votre choix :
+           1. Le titre et le chapeau mentionnent les violences.
+           0. Le titre et/ou le chapeau ne mentionnent pas les violences.
+           
+  Groupe 3 : Éléments concernant la victime (Question 6)
+      6. [Éléments concernant la victime] L'article mentionne-t-il les éléments suivants à propos de la victime : comportement avant les violences, comportement après les violences, prise de substances psychotropes (drogue ou alcool), santé mentale, ou autres éléments? 
+         - Il y a 2 options à choisir :
+           0. Oui
+           1. Non
+           
+  Groupe 4 : Nationalité et Origine (Questions 7-10)
+      7. [Nationalité de l’agresseur] L’article mentionne-t-il directement la nationalité et/ou l’origine de l’auteur, par exemple « l’auteur d’origine égyptienne » ?
+         - Classifiez par continent :
+           1. Amérique du Nord
+           2. Amérique du Sud
+           3. Afrique
+           4. Europe
+           5. Asie
+           6. Océanie
+           7. Aucune nationalité ou origine n’est mentionnée
+         - Si la nationalité et l’origine sont mentionnées, l’origine prévaut.
+    
+      8. [Nationalité de la victime] L’article mentionne-t-il directement la nationalité et/ou l’origine de la victime, par exemple « la victime portugaise » ou « la Suissesse tuée » ?
+         - Classifiez par continent :
+           1. Amérique du Nord
+           2. Amérique du Sud
+           3. Afrique
+           4. Europe
+           5. Asie
+           6. Océanie
+           7. Aucune nationalité ou origine n’est mentionnée
+         - Si la nationalité et l’origine sont mentionnées, l’origine prévaut.
+    
+      9. [Nationalité suisse de l’auteur] La nationalité suisse de l’auteur est-elle mentionnée ?
+          - Options :
+            1. Oui
+            2. Non
+    
+      10. [Nationalité suisse de la victime] La nationalité suisse de la victime est-elle mentionnée ?
+          - Options :
+            1. Oui
+            2. Non
+
+  Groupe 5 : Relation de pouvoir et Escalade (Questions 11-13)
+      11. [Relation de pouvoir] Est-ce que cet article décrit la relation de pouvoir entre la victime et l’auteur des violences et l’emprise de l’auteur sur la victime ?
+          - Il y a 3 options à choisir :
+            1. La relation de pouvoir et l’emprise sont clairement mentionnées (termes comme emprise, ascendance, pression, pouvoir ; l’auteur est un supérieur hiérarchique ; la victime est mineure).
+            0. La relation de pouvoir et d’emprise n’est pas mentionnée explicitement.
+            -1. L’auteur est aussi considéré comme une victime ou la victime est aussi considérée comme un auteur.
+    
+      12. [Type de relation de pouvoir] Quel type de relation de pouvoir entre la victime et l’auteur est mentionné ?
+          - Il y a 4 types à choisir :
+            1. Emprise psychologique (ex. dénigrement, chantage, peur, dénigrement).
+            2. Hiérarchie professionnelle (ex. supérieur hiérarchique, décisions sur le travail).
+            3. La victime est mineure.
+            4. Autre ou pas de mention.
+    
+      13. [Escalade des violences] Cet article mentionne-t-il l’escalade et/ou le continuum des violences ?
+          - Options :
+            1. Oui
+            2. Non
+
+  Groupe 6 : Usage de statistiques et Témoignages (Questions 14-17)
+      14. [Usage de statistiques] Cet article utilise-t-il des statistiques ?
+          - Il y a 3 options à choisir :
+            1. Des statistiques mettant en perspective les violences en général comme un fait de société sont utilisées.
+            0. Des statistiques sur un seul type de violence sont utilisées.
+            -1. Aucune statistique n’est présente dans l’article.
+    
+      15. [Mention d’autres violences] Cet article cite-t-il d’autres violences sexistes et sexuelles ?
+          - Il y a 3 options à choisir :
+            1. L’article cite des violences de manière générale (ex. violences domestiques, harcèlement de rue).
+            0. L’article cite d’autres violences sexistes faites par le même auteur sur une ou plusieurs victimes, ou subies par la même victime.
+            -1. L’article ne cite qu’une violence.
+    
+      16. [Référence à des expert-e-s] Cet article interroge-t-il un-e expert-e des violences sexistes ?
+          - Il y a 3 options à choisir :
+            1. L’article interroge un-e expert-e des violences sexistes (citation directe).
+            0. L’article mentionne un-e expert-e, une association ou institution travaillant sur les violences sexistes (citation indirecte).
+            -1. L’article ne fait aucune référence aux personnes ou organisations travaillant sur les violences sexistes.
+    
+      17. [Informations pour les victimes] Cet article mentionne-t-il des informations supplémentaires susceptibles d’aider les victimes, notamment un numéro d’assistance téléphonique ou un site web ?
+          - Il y a 3 options à choisir :
+            1. L’article mentionne un numéro d’aide ou site internet pour les victimes (encadré, numéro, lien direct).
+            0. L’article mentionne indirectement une ressource pouvant aider les victimes (texte de loi, organisation aidant les victimes, etc.).
+            -1. L’article ne mentionne aucun élément informatif pour les victimes.
+            
+  Groupe 7 : Conséquences pour l'auteur et la victime (Questions 18-19)
+      18. [Conséquences pour l’auteur] L’article mentionne-t-il explicitement les conséquences des accusations sur l’auteur ?
+          - Choisissez l'une des options suivantes et expliquez votre choix :
+            1. Péril pour sa carrière ou son image
+            2. Conséquence judiciaire (amendes ou prison)
+            3. Conséquences psychologiques
+            -1. Aucun impact mentionné.
+    
+      19. [Conséquences pour la victime] L’article mentionne-t-il les conséquences des violences pour la victime ?
+          - Choisissez l'une des options suivantes et expliquez votre choix :
+            1. Conséquences physiques
+            2. Conséquences psychologiques
+            -1. Aucun impact mentionné
+
+  Article à analyser : 

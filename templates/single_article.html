@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block title %}Traitement d'article unique{% endblock %}
+
+{% block content %}
+<h2>Traitement d'article unique</h2>
+
+<form method="POST" action="{{ url_for('process_single_article') }}" id="singleArticleForm">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>📄 Contenu de l'article</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="article_title" class="form-label">Titre de l'article *</label>
+                <input type="text" class="form-control" id="article_title" name="article_title" 
+                       placeholder="Saisir le titre de l'article ici..." required>
+            </div>
+            <div class="mb-3">
+                <label for="article_desc" class="form-label">Chapeau de l'article</label>
+                <textarea class="form-control" id="article_desc" name="article_desc" rows="3" 
+                          placeholder="Saisir le chapeau de l'article..."></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="article_content" class="form-label">Contenu de l'article *</label>
+                <textarea class="form-control" id="article_content" name="article_content" rows="10" 
+                          placeholder="Saisir le contenu complet de l'article ici..." required></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>🤖 Paramètres des LLMs</h4>
+        </div>
+        <div class="card-body">
+            <!-- GPT Prompt Section (Collapsible) -->
+            <div class="mb-4">
+                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" 
+                        data-bs-target="#promptSection" aria-expanded="false" aria-controls="promptSection">
+                    📝 Voir/Modifier le prompt
+                </button>
+                <div class="collapse mt-3" id="promptSection">
+                    <div class="card card-body bg-light">
+                        <label for="gpt_prompt" class="form-label">Prompt d'analyse des LLMs</label>
+                        <textarea class="form-control" id="gpt_prompt" name="gpt_prompt" rows="20" 
+                            style="font-family: monospace; font-size: 0.9em;">{{ default_prompt }}</textarea>
+
+                        <div class="form-text">
+                            <small class="text-muted">💡 Ceci est le prompt par défaut envoyé au LLM. Vous pouvez le modifier pour personnaliser l'analyse.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="mb-4">
+                <label for="model" class="form-label">Modèle</label>
+                <select class="form-select" id="model" name="model" onchange="toggleModelParameters()">
+                    <option value="gpt-4" {% if default_model == 'gpt-4' %}selected{% endif %}>GPT-4</option>
+                    <option value="gpt-5" {% if default_model == 'gpt-5' %}selected{% endif %}>GPT-5</option>
+                </select>
+                <div class="form-text">
+                    <small class="text-muted" id="modelDescription">GPT-4: Modèle stable avec paramètres traditionnels</small>
+                </div>
+            </div>
+
+            <!-- GPT-4 Parameters -->
+            <div id="gpt4Parameters" class="model-parameters">
+                <div class="alert alert-info">
+                    <strong>🔧 Paramètres GPT-4</strong> - Contrôles fins pour la génération de texte
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="max_tokens" class="form-label">Tokens max</label>
+                            <input type="number" class="form-control" id="max_tokens" name="max_tokens" 
+                                   value="{{ default_max_tokens }}" min="100" max="4000">
+                            <div class="form-text">
+                                <small class="text-muted">Nombre maximum de tokens dans la réponse</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="temperature" class="form-label">Température</label>
+                            <input type="number" class="form-control" id="temperature" name="temperature" 
+                                   value="{{ default_temperature }}" min="0" max="2" step="0.1">
+                            <div class="form-text">
+                                <small class="text-muted">Contrôle la créativité (0 = déterministe, 2 = très créatif)</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="top_p" class="form-label">Top P</label>
+                            <input type="number" class="form-control" id="top_p" name="top_p" 
+                                   value="{{ default_top_p }}" min="0" max="1" step="0.1">
+                            <div class="form-text">
+                                <small class="text-muted">Filtre les tokens par probabilité cumulative</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="frequency_penalty" class="form-label">Pénalité de fréquence</label>
+                            <input type="number" class="form-control" id="frequency_penalty" name="frequency_penalty" 
+                                   value="{{ default_frequency_penalty }}" min="-2" max="2" step="0.1">
+                            <div class="form-text">
+                                <small class="text-muted">Réduit la répétition de mots fréquents</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="presence_penalty" class="form-label">Pénalité de présence</label>
+                            <input type="number" class="form-control" id="presence_penalty" name="presence_penalty" 
+                                   value="{{ default_presence_penalty }}" min="-2" max="2" step="0.1">
+                            <div class="form-text">
+                                <small class="text-muted">Encourage l'utilisation de nouveaux mots</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPT-5 Parameters -->
+            <div id="gpt5Parameters" class="model-parameters" style="display: none;">
+                <div class="alert alert-success">
+                    <strong>🚀 Paramètres GPT-5</strong> - Nouveau modèle avec contrôles avancés
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="max_completion_tokens" class="form-label">Tokens de complétion max</label>
+                            <input type="number" class="form-control" id="max_completion_tokens" name="max_completion_tokens" 
+                                   value="6000" min="1000" max="10000">
+                            <div class="form-text">
+                                <small class="text-muted">Nombre maximum de tokens dans la réponse GPT-5</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reasoning_effort" class="form-label">Effort de raisonnement</label>
+                            <select class="form-select" id="reasoning_effort" name="reasoning_effort">
+                                <option value="minimal">Minimal</option>
+                                <option value="medium" selected>Moyen</option>
+                                <option value="high">Élevé</option>
+                            </select>
+                            <div class="form-text">
+                                <small class="text-muted">Niveau de raisonnement appliqué par le modèle</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="verbosity" class="form-label">Verbosité</label>
+                            <select class="form-select" id="verbosity" name="verbosity">
+                                <option value="minimal">Minimale</option>
+                                <option value="medium" selected>Moyenne</option>
+                                <option value="high">Élevée</option>
+                            </select>
+                            <div class="form-text">
+                                <small class="text-muted">Niveau de détail dans les réponses</small>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="alert alert-warning">
+                                <small><strong>Note:</strong> GPT-5 n'utilise pas les paramètres traditionnels comme temperature, top_p, etc.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+        <button type="submit" class="btn btn-primary btn-lg me-md-2" id="submitBtn">
+            🔍 Traiter l'article
+        </button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+            Annuler
+        </a>
+    </div>
+</form>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-5">
+                <!-- Circular Progress Spinner -->
+                <div class="position-relative d-inline-block mb-4">
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                        <!-- Background circle -->
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="#e9ecef" stroke-width="6"/>
+                        <!-- Progress circle -->
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="#0d6efd" stroke-width="6" 
+                                stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"
+                                transform="rotate(-90 40 40)" id="progressCircle">
+                            <animate attributeName="stroke-dashoffset" 
+                                     values="220;0;220" 
+                                     dur="3s" 
+                                     repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                    <!-- Icon in center -->
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <div class="spinner-border text-primary" style="width: 2rem; height: 2rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mb-3" id="loadingTitle">🔄 Analyse en cours...</h4>
+                <div id="loadingMessages">
+                    <p class="text-muted mb-2" id="currentStep">Initialisation du traitement...</p>
+                    <small class="text-muted" id="timeEstimate">Temps estimé: 30s - 1min</small>
+                </div>
+                
+                <!-- Progress Steps -->
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex-fill">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%" id="stepProgress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">NLP</small>
+                        <small class="text-muted" id="gptStepLabel">GPT-4</small>
+                        <small class="text-muted">Résultats</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">ℹ️ Comment ça fonctionne</h5>
+        <ul>
+            <li><strong>Analyse NLP:</strong> Le système analysera le texte français pour détecter les motifs liés à la violence</li>
+            <li><strong>Traitement GPT:</strong> Votre article sera envoyé au modèle sélectionné pour une classification détaillée</li>
+            <li><strong>Résultats instantanés:</strong> Vous obtiendrez une analyse complète avec des explications affichées directement sur cette page</li>
+            <li><strong>Temps de traitement:</strong> Généralement 30 secondes à 2 minutes selon la taille de l'article</li>
+        </ul>
+        
+        <div class="alert alert-info mt-3">
+            <strong>💡 Conseil:</strong> Pour de meilleurs résultats, assurez-vous que votre article contient au moins 50 mots et traite de sujets liés à la violence ou aux relations.
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom loading animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.loading-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+#progressCircle {
+    transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Model parameter transitions */
+.model-parameters {
+    transition: all 0.3s ease-in-out;
+}
+
+.model-parameters.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+</style>
+
+<script>
+let startTime;
+let progressInterval;
+let timeInterval;
+
+// Toggle between GPT-4 and GPT-5 parameters
+function toggleModelParameters() {
+    const selectedModel = document.getElementById('model').value;
+    const gpt4Params = document.getElementById('gpt4Parameters');
+    const gpt5Params = document.getElementById('gpt5Parameters');
+    const modelDescription = document.getElementById('modelDescription');
+    const gptStepLabel = document.getElementById('gptStepLabel');
+    
+    if (selectedModel === 'gpt-5') {
+        // Show GPT-5 parameters, hide GPT-4
+        gpt4Params.style.display = 'none';
+        gpt5Params.style.display = 'block';
+        modelDescription.textContent = 'GPT-5: Nouveau modèle avec contrôles avancés de raisonnement';
+        if (gptStepLabel) gptStepLabel.textContent = 'GPT-5';
+    } else {
+        // Show GPT-4 parameters, hide GPT-5
+        gpt4Params.style.display = 'block';
+        gpt5Params.style.display = 'none';
+        modelDescription.textContent = 'GPT-4: Modèle stable avec paramètres traditionnels';
+        if (gptStepLabel) gptStepLabel.textContent = 'GPT-4';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleModelParameters();
+});
+
+// Form submission handler
+document.getElementById('singleArticleForm').addEventListener('submit', function(e) {
+    startTime = Date.now();
+    
+    // Show loading modal immediately
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    loadingModal.show();
+    
+    // Update loading modal title based on selected model
+    const selectedModel = document.getElementById('model').value;
+    document.getElementById('loadingTitle').textContent = 
+        `🔄 Analyse en cours avec ${selectedModel.toUpperCase()}...`;
+    
+    // Start progress simulation and time updates
+    simulateProgress();
+    startTimeUpdates();
+    
+    // Disable submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Traitement en cours...';
+});
+
+function startTimeUpdates() {
+    // Update time every second
+    timeInterval = setInterval(function() {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const remaining = Math.max(0, 120 - elapsed); // Assume max 2 minutes
+        
+        document.getElementById('timeEstimate').textContent = 
+            `Temps écoulé: ${Math.floor(elapsed)}s | Estimé restant: ${Math.floor(remaining)}s`;
+    }, 1000);
+}
+
+function simulateProgress() {
+    let step = 0;
+    const selectedModel = document.getElementById('model').value;
+    const modelName = selectedModel.toUpperCase();
+    
+    const steps = [
+        { message: "Préparation de l'analyse...", progress: 10 },
+        { message: "Analyse NLP en cours...", progress: 30 },
+        { message: "Traitement des corpus...", progress: 50 },
+        { message: `Envoi vers ${modelName}...`, progress: 70 },
+        { message: "Classification en cours...", progress: 85 },
+        { message: "Finalisation des résultats...", progress: 95 }
+    ];
+    
+    function updateStep() {
+        if (step < steps.length) {
+            const currentStepData = steps[step];
+            document.getElementById('currentStep').textContent = currentStepData.message;
+            document.getElementById('stepProgress').style.width = currentStepData.progress + '%';
+            
+            step++;
+        }
+    }
+    
+    // Update immediately, then every 3-5 seconds
+    updateStep();
+    progressInterval = setInterval(updateStep, 3000 + Math.random() * 2000);
+}
+
+// Word counter for content
+document.getElementById('article_content').addEventListener('input', function() {
+    const content = this.value;
+    const charCount = content.length;
+    
+    // Calculate word count - split by whitespace and filter out empty strings
+    const wordCount = content.trim() === '' ? 0 : content.trim().split(/\s+/).length;
+    
+    // Remove existing counter
+    const existingCounter = document.getElementById('charCounter');
+    if (existingCounter) {
+        existingCounter.remove();
+    }
+    
+    // Add word counter
+    const counter = document.createElement('small');
+    counter.id = 'charCounter';
+    counter.className = 'text-muted';
+    
+    // Apply your specific logic
+    if (wordCount > 2050) {
+        counter.className = 'text-danger';
+        counter.textContent = `${charCount} caractères | ${wordCount} mots (ATTENTION: maximum 2050 mots autorisé par le modèle GPT-4)`;
+    } else if (wordCount < 50) {
+        counter.className = 'text-warning';
+        counter.textContent = `${charCount} caractères | ${wordCount} mots (recommandé: au moins 50 mots)`;
+    } else if (wordCount > 1500) {
+        counter.className = 'text-warning';
+        counter.textContent = `${charCount} caractères | ${wordCount} mots (approche de la limite de 2050 mots)`;
+    } else {
+        counter.className = 'text-muted';
+        counter.textContent = `${charCount} caractères | ${wordCount} mots`;
+    }
+    
+    this.parentNode.appendChild(counter);
+});
+
+// Clean up intervals when page unloads
+window.addEventListener('beforeunload', function() {
+    if (progressInterval) {
+        clearInterval(progressInterval);
+    }
+    if (timeInterval) {
+        clearInterval(timeInterval);
+    }
+});
+</script>
+{% endblock %}

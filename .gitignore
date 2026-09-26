@@ -1,0 +1,17 @@
+# Secrets
+.env
+
+# Runtime data
+uploads/
+outputs/
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local editor / OS
+.vscode/
+.DS_Store
