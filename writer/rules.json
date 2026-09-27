@@ -1,0 +1,1065 @@
+[
+  {
+    "id": "R01",
+    "category": "mots justes",
+    "replacements": [
+      "agression sexuelle"
+    ],
+    "reason": "",
+    "source": "Livret décadréE 2023, p. 17",
+    "patterns": [
+      "abus sexuel"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R02",
+    "category": "mots justes",
+    "replacements": [
+      "accusation"
+    ],
+    "reason": "Met en doute la parole de la victime ; « accusation » est un terme neutre.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "allégation",
+      "insinuation"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R03",
+    "category": "mots justes",
+    "replacements": [
+      "accusé"
+    ],
+    "reason": "« Présumé » laisse planer un doute sur les faits ; « accusé » est exact et neutre.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "auteur présumé"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R04-hint",
+    "category": "mots justes",
+    "replacements": [
+      "violences sexistes",
+      "domestiques",
+      "au sein du couple"
+    ],
+    "reason": "Présente la violence comme un désaccord entre égaux et efface le rapport de pouvoir.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "conflit"
+    ],
+    "severity": "hint"
+  },
+  {
+    "id": "R04",
+    "category": "mots justes",
+    "replacements": [
+      "violences sexistes",
+      "domestiques",
+      "au sein du couple"
+    ],
+    "reason": "Présente la violence comme un désaccord entre égaux et efface le rapport de pouvoir.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "dispute"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R05",
+    "category": "mots justes",
+    "replacements": [
+      "harcèlement",
+      "agression sexuelle"
+    ],
+    "reason": "Minimise une agression sexuelle en la présentant comme une simple erreur ou un écart.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "dérapage",
+      "maladresse",
+      "comportements inapropriés"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R06",
+    "category": "mots justes",
+    "replacements": [
+      "harcèlement",
+      "agression sexuelle"
+    ],
+    "reason": "Si le geste n'était pas consenti, c'est une agression sexuelle : ce verbe le fait passer pour un geste affectueux.",
+    "source": "Livret décadréE 2023, p. 16-17",
+    "patterns": [
+      "caresser",
+      "peloter",
+      "embrasser"
+    ],
+    "severity": "hint"
+  },
+  {
+    "id": "R08",
+    "category": "mots justes",
+    "replacements": [
+      "meutre par partenaire ou ex-partenaire",
+      "féminicide"
+    ],
+    "reason": "Romantise ou banalise un meurtre ; nommer le féminicide montre sa dimension systémique.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "drame",
+      "crime passionnel",
+      "familial",
+      "relationne"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R09",
+    "category": "mots justes",
+    "replacements": [
+      "elle dit qu’il l’a violée"
+    ],
+    "reason": "« Avouer » suggère une faute de la victime ; la forme passive fait disparaître l'auteur.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "elle avoue",
+      "raconte avoir été violée"
+    ],
+    "severity": "hint"
+  },
+  {
+    "id": "R10",
+    "category": "mots justes",
+    "replacements": [
+      "viol",
+      "relation sexuelle non consentie"
+    ],
+    "reason": "Un acte sans consentement n'est pas une relation sexuelle : c'est un viol.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "faire l’amour"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R10-hint",
+    "category": "mots justes",
+    "replacements": [
+      "viol",
+      "relation sexuelle non consentie"
+    ],
+    "reason": "Un acte sans consentement n'est pas une relation sexuelle : c'est un viol.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "relation sexuelle"
+    ],
+    "severity": "hint"
+  },
+  {
+    "id": "R11",
+    "category": "mots justes",
+    "replacements": [
+      "problème de société"
+    ],
+    "reason": "Présente la violence comme une catastrophe naturelle, sans responsables.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "fléau"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R11-hint",
+    "category": "mots justes",
+    "replacements": [
+      "problème de société"
+    ],
+    "reason": "Présente la violence comme une catastrophe naturelle, sans responsables.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "épidémie"
+    ],
+    "severity": "hint"
+  },
+  {
+    "id": "R12",
+    "category": "mots justes",
+    "replacements": [
+      "auteur de violence"
+    ],
+    "reason": "Fait de l'auteur un être hors norme, alors que les auteurs de violences sont des personnes « ordinaires ».",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "forcené",
+      "pervers",
+      "prédateur"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "R13",
+    "category": "mots justes",
+    "replacements": [
+      "accusatrice",
+      "plaignante"
+    ],
+    "reason": "Met en doute la parole de la victime ; « plaignante » est exact et neutre.",
+    "source": "Livret décadréE 2023, p. 18-19",
+    "patterns": [
+      "victime présumée"
+    ],
+    "severity": "strong"
+  },
+  {
+    "id": "F-nuit-d-horreur",
+    "category": "Sensationnalisme / romantisme",
+    "patterns": [
+      "nuit d'horreur"
+    ],
+    "replacements": [],
+    "reason": "La violence n'est ni sensationnelle ni romantique (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (3. Éviter le sensationnalisme et le romantisme)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-drame-de-la-jalousie",
+    "category": "Sensationnalisme / romantisme",
+    "patterns": [
+      "drame de la jalousie"
+    ],
+    "replacements": [],
+    "reason": "La violence n'est ni sensationnelle ni romantique (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (3. Éviter le sensationnalisme et le romantisme)",
+    "severity": "strong"
+  },
+  {
+    "id": "F-par-amour",
+    "category": "Sensationnalisme / romantisme",
+    "patterns": [
+      "par amour"
+    ],
+    "replacements": [],
+    "reason": "La violence n'est ni sensationnelle ni romantique (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (3. Éviter le sensationnalisme et le romantisme)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-fou-amoureux",
+    "category": "Sensationnalisme / romantisme",
+    "patterns": [
+      "fou amoureux"
+    ],
+    "replacements": [],
+    "reason": "La violence n'est ni sensationnelle ni romantique (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (3. Éviter le sensationnalisme et le romantisme)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-scene-d-horreur",
+    "category": "Sensationnalisme / romantisme",
+    "patterns": [
+      "scène d'horreur"
+    ],
+    "replacements": [],
+    "reason": "La violence n'est ni sensationnelle ni romantique (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (3. Éviter le sensationnalisme et le romantisme)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-tenue-legere",
+    "category": "Culpabiliser la victime",
+    "patterns": [
+      "tenue légère"
+    ],
+    "replacements": [],
+    "reason": "Ne pas juger le comportement, les réactions ou l'apparence de la victime (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (4. Ne pas culpabiliser les victimes)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-elle-avait-bu",
+    "category": "Culpabiliser la victime",
+    "patterns": [
+      "elle avait bu"
+    ],
+    "replacements": [],
+    "reason": "Ne pas juger le comportement, les réactions ou l'apparence de la victime (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (4. Ne pas culpabiliser les victimes)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-aurait-provoque",
+    "category": "Culpabiliser la victime",
+    "patterns": [
+      "aurait provoqué"
+    ],
+    "replacements": [],
+    "reason": "Ne pas juger le comportement, les réactions ou l'apparence de la victime (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (4. Ne pas culpabiliser les victimes)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-pourquoi-n-est-elle-pas-partie",
+    "category": "Culpabiliser la victime",
+    "patterns": [
+      "pourquoi n'est-elle pas partie"
+    ],
+    "replacements": [],
+    "reason": "Ne pas juger le comportement, les réactions ou l'apparence de la victime (p. 8).",
+    "source": "Livret décadréE 2023, p. 8-9 (4. Ne pas culpabiliser les victimes)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-pete-les-plombs",
+    "category": "Déresponsabiliser l'auteur",
+    "patterns": [
+      "pète les plombs"
+    ],
+    "replacements": [],
+    "reason": "Perte de contrôle, folie, maladie, dépendance, émotion ou culture ne justifient pas la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. Ne pas déresponsabiliser les personnes auteures)",
+    "severity": "strong"
+  },
+  {
+    "id": "F-coup-de-folie",
+    "category": "Déresponsabiliser l'auteur",
+    "patterns": [
+      "coup de folie"
+    ],
+    "replacements": [],
+    "reason": "Perte de contrôle, folie, maladie, dépendance, émotion ou culture ne justifient pas la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. Ne pas déresponsabiliser les personnes auteures)",
+    "severity": "strong"
+  },
+  {
+    "id": "F-n-a-pas-supporte-la-rupture",
+    "category": "Déresponsabiliser l'auteur",
+    "patterns": [
+      "n'a pas supporté la rupture"
+    ],
+    "replacements": [],
+    "reason": "Perte de contrôle, folie, maladie, dépendance, émotion ou culture ne justifient pas la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. Ne pas déresponsabiliser les personnes auteures)",
+    "severity": "strong"
+  },
+  {
+    "id": "F-perte-de-controle",
+    "category": "Déresponsabiliser l'auteur",
+    "patterns": [
+      "perte de contrôle"
+    ],
+    "replacements": [],
+    "reason": "Perte de contrôle, folie, maladie, dépendance, émotion ou culture ne justifient pas la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. Ne pas déresponsabiliser les personnes auteures)",
+    "severity": "strong"
+  },
+  {
+    "id": "F-sous-l-emprise-de-l-alcool",
+    "category": "Déresponsabiliser l'auteur",
+    "patterns": [
+      "sous l'emprise de l'alcool"
+    ],
+    "replacements": [],
+    "reason": "Perte de contrôle, folie, maladie, dépendance, émotion ou culture ne justifient pas la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. Ne pas déresponsabiliser les personnes auteures)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-d-origine",
+    "category": "Nationalité / origine de l'auteur",
+    "patterns": [
+      "d'origine"
+    ],
+    "replacements": [],
+    "reason": "Accentuer la nationalité invisibilise la multiplicité des profils d'auteurs (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. (fin) Éviter d'accentuer la nationalité)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-ressortissant",
+    "category": "Nationalité / origine de l'auteur",
+    "patterns": [
+      "ressortissant"
+    ],
+    "replacements": [],
+    "reason": "Accentuer la nationalité invisibilise la multiplicité des profils d'auteurs (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. (fin) Éviter d'accentuer la nationalité)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-requerant-d-asile",
+    "category": "Nationalité / origine de l'auteur",
+    "patterns": [
+      "requérant d'asile"
+    ],
+    "replacements": [],
+    "reason": "Accentuer la nationalité invisibilise la multiplicité des profils d'auteurs (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (5. (fin) Éviter d'accentuer la nationalité)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-rencontres-sur-internet",
+    "category": "Circonstances de la relation",
+    "patterns": [
+      "rencontrés sur internet"
+    ],
+    "replacements": [],
+    "reason": "Les circonstances de la relation ne permettent pas de juger ou de justifier la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (6. Ne pas juger des circonstances de la relation)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-relation-a-distance",
+    "category": "Circonstances de la relation",
+    "patterns": [
+      "relation à distance"
+    ],
+    "replacements": [],
+    "reason": "Les circonstances de la relation ne permettent pas de juger ou de justifier la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (6. Ne pas juger des circonstances de la relation)",
+    "severity": "hint"
+  },
+  {
+    "id": "F-mariage-arrange",
+    "category": "Circonstances de la relation",
+    "patterns": [
+      "mariage arrangé"
+    ],
+    "replacements": [],
+    "reason": "Les circonstances de la relation ne permettent pas de juger ou de justifier la violence (p. 9).",
+    "source": "Livret décadréE 2023, p. 8-9 (6. Ne pas juger des circonstances de la relation)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-monstre",
+    "category": "animalisant",
+    "patterns": [
+      "monstre"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-monstrueux",
+    "category": "animalisant",
+    "patterns": [
+      "monstrueux"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-bestial",
+    "category": "animalisant",
+    "patterns": [
+      "bestial"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-brutalite",
+    "category": "animalisant",
+    "patterns": [
+      "brutalité"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-bete",
+    "category": "animalisant",
+    "patterns": [
+      "bête"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-sauvage",
+    "category": "animalisant",
+    "patterns": [
+      "sauvage"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-contre-nature",
+    "category": "animalisant",
+    "patterns": [
+      "contre-nature"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-hideux",
+    "category": "animalisant",
+    "patterns": [
+      "hideux"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-animal",
+    "category": "animalisant",
+    "patterns": [
+      "animal"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-fureur",
+    "category": "animalisant",
+    "patterns": [
+      "fureur"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-meute",
+    "category": "animalisant",
+    "patterns": [
+      "meute"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-pulsion",
+    "category": "animalisant",
+    "patterns": [
+      "pulsion"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-impulsif",
+    "category": "animalisant",
+    "patterns": [
+      "impulsif"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-inhumain",
+    "category": "animalisant",
+    "patterns": [
+      "inhumain"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-incontrolable",
+    "category": "animalisant",
+    "patterns": [
+      "incontrolâble"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-proies",
+    "category": "animalisant",
+    "patterns": [
+      "proies"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-dechainer",
+    "category": "animalisant",
+    "patterns": [
+      "déchainer"
+    ],
+    "replacements": [],
+    "reason": "Animalise l'auteur et en fait un être hors norme, ce qui masque la dimension sociale des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-incident",
+    "category": "minimisant",
+    "patterns": [
+      "incident"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-allegations",
+    "category": "minimisant",
+    "patterns": [
+      "allégations"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-insinuations",
+    "category": "minimisant",
+    "patterns": [
+      "insinuations"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-passionnel",
+    "category": "minimisant",
+    "patterns": [
+      "passionnel"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-predateurs",
+    "category": "minimisant",
+    "patterns": [
+      "prédateurs"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-relation-toxique",
+    "category": "minimisant",
+    "patterns": [
+      "relation toxique"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-abuseur",
+    "category": "minimisant",
+    "patterns": [
+      "abuseur"
+    ],
+    "replacements": [],
+    "reason": "Minimise la gravité des violences.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-folie",
+    "category": "santé mentale",
+    "patterns": [
+      "folie"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-coup-de-tete",
+    "category": "santé mentale",
+    "patterns": [
+      "coup de tête"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-emportement",
+    "category": "santé mentale",
+    "patterns": [
+      "emportement"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-s-emporter",
+    "category": "santé mentale",
+    "patterns": [
+      "s'emporter"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-alienation",
+    "category": "santé mentale",
+    "patterns": [
+      "aliénation"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-aliene",
+    "category": "santé mentale",
+    "patterns": [
+      "aliéné"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-delire",
+    "category": "santé mentale",
+    "patterns": [
+      "délire"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-demence",
+    "category": "santé mentale",
+    "patterns": [
+      "démence"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-depression",
+    "category": "santé mentale",
+    "patterns": [
+      "dépression"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-desequilibre",
+    "category": "santé mentale",
+    "patterns": [
+      "déséquilibre"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-egarement",
+    "category": "santé mentale",
+    "patterns": [
+      "égarement"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-frenesie",
+    "category": "santé mentale",
+    "patterns": [
+      "frénésie"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-maladie-mentale",
+    "category": "santé mentale",
+    "patterns": [
+      "maladie mentale"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-nevrose",
+    "category": "santé mentale",
+    "patterns": [
+      "névrose"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-paranoia",
+    "category": "santé mentale",
+    "patterns": [
+      "paranoïa"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-perversion",
+    "category": "santé mentale",
+    "patterns": [
+      "perversion"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-psychose",
+    "category": "santé mentale",
+    "patterns": [
+      "psychose"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-rage",
+    "category": "santé mentale",
+    "patterns": [
+      "rage"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-fou",
+    "category": "santé mentale",
+    "patterns": [
+      "fou"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-petage-de-cable",
+    "category": "santé mentale",
+    "patterns": [
+      "pétage de câble"
+    ],
+    "replacements": [],
+    "reason": "Explique la violence par la maladie ou la perte de contrôle, ce qui déresponsabilise l'auteur.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "strong"
+  },
+  {
+    "id": "D-alcool",
+    "category": "substances",
+    "patterns": [
+      "alcool"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-drogue",
+    "category": "substances",
+    "patterns": [
+      "drogue"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-psychotrope",
+    "category": "substances",
+    "patterns": [
+      "psychotrope"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-soiree-arrosee",
+    "category": "substances",
+    "patterns": [
+      "soirée arrosée"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-cocainomane",
+    "category": "substances",
+    "patterns": [
+      "cocainomane"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-coke",
+    "category": "substances",
+    "patterns": [
+      "coke"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-cannabis",
+    "category": "substances",
+    "patterns": [
+      "cannabis"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-stupefiant",
+    "category": "substances",
+    "patterns": [
+      "stupéfiant"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-alcoolisme",
+    "category": "substances",
+    "patterns": [
+      "alcoolisme"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-dependance",
+    "category": "substances",
+    "patterns": [
+      "dépendance"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-accro",
+    "category": "substances",
+    "patterns": [
+      "accro"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-alcoolise",
+    "category": "substances",
+    "patterns": [
+      "alcoolisé"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  },
+  {
+    "id": "D-ivres",
+    "category": "substances",
+    "patterns": [
+      "ivres"
+    ],
+    "replacements": [],
+    "reason": "L'alcool ou la drogue ne justifient pas la violence : à mentionner seulement si c'est utile à l'information.",
+    "source": "Livret décadréE 2023, p. 8-9 (enjeux)",
+    "severity": "hint"
+  }
+]

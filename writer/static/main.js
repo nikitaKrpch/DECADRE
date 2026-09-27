@@ -11,6 +11,8 @@
   const ignored = new Set();
   let aiIssues = [];
   let checklistTimer = null;
+  let analysisTimer = null;
+  let analysisRequest = 0;
 
   // An ignore must survive edits elsewhere in the text, so it can't use the raw
   // position. Identify the issue by rule + matched words + which occurrence it is.
@@ -54,10 +56,31 @@
     return out;
   }
 
-  // Runs on every keystroke, synchronously: the underlines must never lag behind
-  // the text or they drift out of place. The engine is expected to take < 50 ms.
-  function analyse() {
-    const text = D.ui.getText();
+  function scheduleServerAnalysis(text) {
+    clearTimeout(analysisTimer);
+    const requestId = ++analysisRequest;
+    if (!text.trim()) return;
+    analysisTimer = setTimeout(async () => {
+      try {
+        const response = await fetch("/rediger/api/analyse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        if (!response.ok) return;
+        const result = await response.json();
+        if (requestId !== analysisRequest || D.ui.getText() !== text || !Array.isArray(result.issues)) return;
+        const visible = merge(result.issues, aiIssues).filter((is) => !ignored.has(ignoreId(is, text)));
+        D.ui.render(text, visible);
+      } catch (err) {
+        // Local matching remains visible when the server is unavailable.
+        console.warn("[Decadre] server rule analysis unavailable", err);
+      }
+    }, 400);
+  }
+
+  // Local matching keeps feedback immediate; the server replaces it after lemmatization.
+  function analyse(text = D.ui.getText()) {
     let found = [];
     try {
       if (D.engine) found = D.engine.findIssues(text, D.rules || []);
@@ -67,6 +90,7 @@
     relocateAi(text);
     const visible = merge(found, aiIssues).filter((is) => !ignored.has(ignoreId(is, text)));
     D.ui.render(text, visible);
+    scheduleServerAnalysis(text);
 
     clearTimeout(checklistTimer);
     checklistTimer = setTimeout(() => updateChecklist(text), 250);

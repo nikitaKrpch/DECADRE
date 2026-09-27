@@ -37,7 +37,7 @@
     how:
       "Collez ou écrivez votre texte. Les passages concernés par les recommandations sont " +
       "soulignés : cliquez dessus pour voir l'explication et une suggestion. " +
-      "Votre texte reste dans votre navigateur et n'est envoyé nulle part.",
+      "Pour l'analyse lemmatisée, votre texte est envoyé à ce serveur et n'est pas conservé par l'outil.",
     legend: "Légende",
     aiButton: "Analyse approfondie (IA)",
     aiLoading: "Analyse en cours…",

@@ -26,6 +26,7 @@ from openpyxl import load_workbook
 
 DEFAULT_INPUT = Path(__file__).resolve().parents[1] / "Rule_Review.xlsx"
 DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "static" / "rules.js"
+DEFAULT_JSON_OUTPUT = Path(__file__).resolve().parents[1] / "rules.json"
 SOURCE_SHEET = "Sheet1"
 SEPARATOR = ";"
 FIRST_DATA_ROW = 4  # "Mots justes", "Familles", "Dictionnaires": intro, legend, headers above
@@ -260,15 +261,23 @@ def write_rules(output_path: Path, rules: list[dict[str, Any]]) -> None:
 	)
 
 
+def write_json(output_path: Path, rules: list[dict[str, Any]]) -> None:
+	"""Write rules as JSON for the Python analysis backend."""
+	output_path.parent.mkdir(parents=True, exist_ok=True)
+	output_path.write_text(json.dumps(rules, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> None:
 	parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument("input", nargs="?", type=Path, default=DEFAULT_INPUT, help="Input Rule_Review.xlsx path")
 	parser.add_argument("output", nargs="?", type=Path, default=DEFAULT_OUTPUT, help="Output rules.js path")
+	parser.add_argument("json_output", nargs="?", type=Path, default=DEFAULT_JSON_OUTPUT, help="Output rules.json path")
 	args = parser.parse_args()
 
 	rules = build_rules(args.input)
 	write_rules(args.output, rules)
-	print(f"Wrote {len(rules)} rules to {args.output}")
+	write_json(args.json_output, rules)
+	print(f"Wrote {len(rules)} rules to {args.output} and {args.json_output}")
 
 
 if __name__ == "__main__":
