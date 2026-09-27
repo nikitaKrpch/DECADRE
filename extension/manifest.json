@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "décadréE — Assistant de rédaction (WordPress)",
+  "version": "0.1.0",
+  "description": "Repère les formulations problématiques et ce qui manque dans un article sur les violences sexistes, directement dans l'éditeur WordPress.",
+  "content_scripts": [
+    {
+      "matches": ["*://*/wp-admin/post.php*", "*://*/wp-admin/post-new.php*"],
+      "js": ["shared/rules.js", "shared/engine.js", "shared/checklist.js", "wp-panel.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    }
+  ]
+}
