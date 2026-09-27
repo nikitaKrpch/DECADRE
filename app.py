@@ -347,7 +347,10 @@ def login():
             session.permanent = True
             app.logger.info(f"✅ User logged in successfully")
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('index'))
+            # PeaceTech hackathon 2026: after login, open the writing assistant (writer/)
+            # instead of the institute's tools page. Original line, to restore the old behaviour:
+            # return redirect(next_page or url_for('index'))
+            return redirect(next_page or url_for('writer.editor'))
         else:
             flash('Mot de passe incorrect', 'error')
             app.logger.warning(f"⚠️ Failed login attempt")
@@ -359,7 +362,19 @@ def logout():
     app.logger.info(f"👋 User logged out")
     return redirect(url_for('login'))
 
+# PeaceTech hackathon 2026: the writing assistant (writer/, at /rediger/) is now the landing page.
+# Nothing of the original tool was removed:
+#   - "/" redirects to the writing assistant (new function home() below);
+#   - the original home page (Article unique / Traitement par lots) moved from "/" to "/outils".
+#     The function keeps its name index(), so every existing url_for('index') link and
+#     "back" button in the templates still leads to it.
+# To restore the original behaviour: delete home() and change '/outils' back to '/' on index().
 @app.route('/')
+@login_required
+def home():
+    return redirect(url_for('writer.editor'))
+
+@app.route('/outils')
 @login_required
 def index():
     return render_template('index.html')
