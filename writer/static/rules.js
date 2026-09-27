@@ -48,8 +48,8 @@
     "category": "mots justes",
     "replacements": [
       "violences sexistes",
-      "domestiques",
-      "au sein du couple"
+      "violences domestiques",
+      "violences au sein du couple"
     ],
     "reason": "Présente la violence comme un désaccord entre égaux et efface le rapport de pouvoir.",
     "source": "Livret décadréE 2023, p. 16-17",
@@ -63,8 +63,8 @@
     "category": "mots justes",
     "replacements": [
       "violences sexistes",
-      "domestiques",
-      "au sein du couple"
+      "violences domestiques",
+      "violences au sein du couple"
     ],
     "reason": "Présente la violence comme un désaccord entre égaux et efface le rapport de pouvoir.",
     "source": "Livret décadréE 2023, p. 16-17",
@@ -109,7 +109,7 @@
     "id": "R08",
     "category": "mots justes",
     "replacements": [
-      "meutre par partenaire ou ex-partenaire",
+      "meurtre par partenaire ou ex-partenaire",
       "féminicide"
     ],
     "reason": "Romantise ou banalise un meurtre ; nommer le féminicide montre sa dimension systémique.",
@@ -117,8 +117,8 @@
     "patterns": [
       "drame",
       "crime passionnel",
-      "familial",
-      "relationne"
+      "drame familial",
+      "crime relationnel"
     ],
     "severity": "strong"
   },

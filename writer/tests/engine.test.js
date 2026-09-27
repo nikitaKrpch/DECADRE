@@ -115,7 +115,7 @@ test("rule.exact turns automatic endings off", () => {
 test("issue has every field the UI reads", () => {
   const [is] = engine.findIssues("un drame", [rule("R8", ["drame"], { replacements: ["féminicide"], reason: "r", source: "s" })]);
   assert.deepEqual(Object.keys(is).sort(),
-    ["category", "end", "inQuote", "key", "match", "origin", "reason", "replacements", "ruleId", "severity", "source", "start"]);
+    ["category", "end", "inQuote", "key", "match", "origin", "pattern", "reason", "replacements", "ruleId", "severity", "source", "start"]);
   assert.equal(is.key, "R8:3");
 });
 
@@ -144,6 +144,65 @@ test("fast: long article (~3,500 words) with real rules under 50 ms", () => {
   const ms = Number(process.hrtime.bigint() - t) / 1e6 / 10;
   assert.ok(ms < 50, `took ${ms.toFixed(1)} ms`);
   console.log(`      (${text.split(/\s+/).length} words, ${ms.toFixed(1)} ms per call)`);
+});
+
+console.log("\nengine.agree");
+
+const applyAgree = (text, word, rep) => {
+  const s = text.indexOf(word);
+  const a = engine.agree(text, s, s + word.length, rep);
+  return text.slice(0, a.start) + a.text + text.slice(a.end);
+};
+
+test("plural suggestion makes the determiner plural", () => {
+  assert.equal(applyAgree("après une dispute.", "dispute", "violences sexistes"), "après des violences sexistes.");
+  assert.equal(applyAgree("Une dispute, puis le meurtre.", "dispute", "violences sexistes"), "Des violences sexistes, puis le meurtre.");
+  assert.equal(applyAgree("au cours d'une dispute", "dispute", "violences sexistes"), "au cours de violences sexistes");
+  assert.equal(applyAgree("après cette dispute", "dispute", "violences sexistes"), "après ces violences sexistes");
+  assert.equal(applyAgree("après sa dispute", "dispute", "violences sexistes"), "après ses violences sexistes");
+});
+
+test("de la / à la become des / aux", () => {
+  assert.equal(applyAgree("lors de la dispute", "dispute", "violences sexistes"), "lors des violences sexistes");
+  assert.equal(applyAgree("suite à la dispute", "dispute", "violences sexistes"), "suite aux violences sexistes");
+  assert.equal(applyAgree("De la dispute naît", "dispute", "violences sexistes"), "Des violences sexistes naît");
+  assert.equal(applyAgree("de sa dispute", "dispute", "violences sexistes"), "de ses violences sexistes");
+});
+
+test("singular suggestion or no determiner: unchanged", () => {
+  assert.equal(applyAgree("un drame a eu lieu", "drame", "féminicide"), "un féminicide a eu lieu");
+  assert.equal(applyAgree("Dispute à Genève", "Dispute", "Violences sexistes"), "Violences sexistes à Genève");
+  assert.equal(applyAgree("les disputes du couple", "disputes", "violences sexistes"), "les violences sexistes du couple");
+});
+
+test("words before that can't agree: no replacement (reword by hand)", () => {
+  const nul = (text, word) => { const i = text.indexOf(word); return engine.agree(text, i, i + word.length, "violences sexistes"); };
+  assert.equal(nul("au terme d'une violente dispute", "dispute"), null);
+  assert.equal(nul("après dispute", "dispute"), null);
+});
+
+console.log("\nengine.adapt");
+
+const adaptFirst = (text, word, rep) => {
+  const is = engine.findIssues(text, realRules).find((i) => engine.fold(i.match).includes(engine.fold(word)));
+  assert.ok(is, `no issue found for "${word}"`);
+  return engine.adapt(is, rep);
+};
+
+test("same form: suggestion unchanged", () => {
+  assert.equal(adaptFirst("après la dispute", "dispute", "violences sexistes"), "violences sexistes");
+  assert.equal(adaptFirst("un drame à Genève", "drame", "féminicide"), "féminicide");
+});
+
+test("plural found: suggestion made plural", () => {
+  assert.equal(adaptFirst("des drames à répétition", "drames", "féminicide"), "féminicides");
+  assert.equal(adaptFirst("les victimes présumées", "victimes", "plaignante"), "plaignantes");
+  assert.equal(adaptFirst("les disputes", "disputes", "violences sexistes"), "violences sexistes");
+});
+
+test("verb form: no replacement", () => {
+  assert.equal(adaptFirst("le couple se disputait souvent", "disputait", "violences sexistes"), null);
+  assert.equal(adaptFirst("ils ont fini par se disputer", "disputer", "violences sexistes"), null);
 });
 
 console.log(`\n${passed} passed${process.exitCode ? ", some FAILED" : ""}`);

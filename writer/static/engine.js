@@ -147,6 +147,7 @@
           found.push({
             key: `${rule.id}:${start}`,
             ruleId: rule.id,
+            pattern,
             start,
             end,
             match: text.slice(start, end),
@@ -184,6 +185,70 @@
     return out;
   }
 
-  D.engine = { findIssues, fold };
+  // A plural suggestion after a singular determiner ("une dispute" → "violences sexistes") would
+  // give "une violences sexistes": include the determiner in the replaced range, made plural.
+  // Returns the range to replace and the text to put there, or null when the words before can't be
+  // made to agree ("d'une violente dispute"): the sentence then has to be reworded by hand.
+  const PLURAL_DET = {
+    un: "des", une: "des", le: "les", la: "les", "l'": "les", ce: "ces", cet: "ces", cette: "ces",
+    son: "ses", sa: "ses", mon: "mes", ma: "mes", ton: "tes", ta: "tes", notre: "nos", votre: "vos",
+    leur: "leurs", "d'un": "de", "d'une": "de",
+  };
+  function agree(text, start, end, replacement) {
+    const same = { start, end, text: replacement };
+    const first = replacement.trim().split(/\s+/)[0] || "";
+    if (first.length < 4 || !/[sx]$/i.test(first)) return same;
+    if (/[sx]$/i.test(text.slice(start, end))) return same; // already plural ("les disputes")
+    const before = text.slice(Math.max(0, start - 16), start);
+    const m = /(?<![\p{L}'’])(?:(de|à)\s+)?(l['’]|(?:d['’])?\p{L}+\s+)$/iu.exec(before);
+    if (!m) return same; // start of text, or after punctuation ("Dispute à Genève", "« dispute")
+    const det = m[2].trim().toLowerCase().replace("’", "'");
+    let plural = PLURAL_DET[det];
+    if (!plural) return null;
+    let from = start - m[2].length;
+    let word = m[2];
+    // "de la" → "des", "à la" → "aux" (not "de les", "à les")
+    if (m[1] && ["le", "la", "l'"].includes(det)) {
+      plural = m[1].toLowerCase() === "de" ? "des" : "aux";
+      from = start - m[0].length;
+      word = m[1];
+    }
+    const cased = /^\p{Lu}/u.test(word) ? plural[0].toUpperCase() + plural.slice(1) : plural;
+    return { start: from, end, text: `${cased} ${replacement}` };
+  }
+
+  // How a found word relates to its pattern word: "same", "plural", or null for any other form
+  // (e.g. the verb "disputait" for the noun "dispute", which a noun can't replace word for word).
+  function wordForm(found, pat) {
+    if (found === pat) return "same";
+    if (found === pat + "s" || found === pat + "x") return "plural";
+    if (pat.endsWith("al") && found === pat.slice(0, -2) + "aux") return "plural";
+    if (!pat.endsWith("e") && found === pat + "e") return "same"; // présumé -> présumée
+    if (!pat.endsWith("e") && found === pat + "es") return "plural";
+    return null;
+  }
+
+  function pluralWord(w) {
+    if (/[sxz]$/i.test(w)) return w;
+    if (/al$/i.test(w)) return w.slice(0, -2) + "aux";
+    if (/eau$/i.test(w)) return w + "x";
+    return w + "s";
+  }
+
+  // The suggestion adapted to the form found ("des drames" -> "féminicides"), or null when it
+  // can't replace the words as they are and the sentence has to be reworded by hand.
+  function adapt(issue, replacement) {
+    if (!issue.pattern || issue.pattern.includes("*")) return replacement;
+    const found = fold(issue.match).trim().split(/\s+/);
+    const pat = fold(issue.pattern).trim().split(/\s+/);
+    if (found.length !== pat.length) return null;
+    const forms = found.map((w, i) => wordForm(w, pat[i]));
+    if (forms.includes(null)) return null;
+    if (!forms.includes("plural")) return replacement;
+    const [first, ...rest] = replacement.split(" ");
+    return [pluralWord(first), ...rest].join(" ");
+  }
+
+  D.engine = { findIssues, fold, agree, adapt };
   if (typeof module !== "undefined" && module.exports) module.exports = D.engine;
 })(typeof window !== "undefined" ? window : globalThis);
