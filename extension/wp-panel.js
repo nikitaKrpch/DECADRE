@@ -208,6 +208,68 @@
     .empty, .disclaimer { color: #757575; font-size: 12px; }
   `;
 
+  // Underlines in the editor with the CSS Custom Highlight API: Chrome draws them over the text,
+  // nothing is added to the content, so WordPress's editing and saving aren't affected.
+  const HL_CSS = `
+    ::highlight(decadre-strong) { text-decoration: underline wavy #d63638; text-decoration-thickness: 1.5px; }
+    ::highlight(decadre-hint) { text-decoration: underline dotted #dba617; text-decoration-thickness: 2px; }
+    ::highlight(decadre-active) { background-color: rgba(107, 42, 138, .18); }`;
+
+  // Recent WordPress shows the post inside an iframe; older versions in the page itself.
+  function editorDoc() {
+    const canvas = document.querySelector('iframe[name="editor-canvas"]');
+    return canvas && canvas.contentDocument && canvas.contentDocument.body ? canvas.contentDocument : document;
+  }
+
+  function unitElement(doc, u) {
+    return u.id === "title"
+      ? doc.querySelector(".editor-post-title")
+      : doc.querySelector(`[data-block="${doc.defaultView.CSS.escape(u.id)}"]`);
+  }
+
+  // DOM range for plain-text offsets [start, end) of a block. Bold/links split the text into
+  // several nodes; <br> counts as one character ("\n" in htmlToText); nested blocks (a sub-list
+  // inside a list item) are skipped.
+  function rangeFor(doc, el, start, end) {
+    const NF = doc.defaultView.NodeFilter;
+    const walker = doc.createTreeWalker(el, NF.SHOW_TEXT | NF.SHOW_ELEMENT, {
+      acceptNode: (n) => (n !== el && n.nodeType === 1 && n.hasAttribute("data-block") ? NF.FILTER_REJECT : NF.FILTER_ACCEPT),
+    });
+    const range = doc.createRange();
+    let pos = 0, started = false;
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (n.nodeType === 1) { if (n.nodeName === "BR") pos += 1; continue; }
+      const len = n.data.length;
+      if (!started && start < pos + len) { range.setStart(n, start - pos); started = true; }
+      if (started && end <= pos + len) { range.setEnd(n, end - pos); return range; }
+      pos += len;
+    }
+    return null;
+  }
+
+  let activeIssue = -1;
+
+  function paint() {
+    const doc = editorDoc(), win = doc.defaultView;
+    if (!win.CSS || !win.CSS.highlights || !win.Highlight) return;
+    if (!doc.getElementById("decadre-hl")) {
+      const st = doc.createElement("style");
+      st.id = "decadre-hl";
+      st.textContent = HL_CSS;
+      doc.head.appendChild(st);
+    }
+    const groups = { strong: [], hint: [], active: [] };
+    state.issues.forEach((is, i) => {
+      const el = unitElement(doc, is.unit);
+      const r = el && rangeFor(doc, el, is.start, is.end);
+      // If the editor shows something else there, skip it rather than underline the wrong words.
+      if (!r || D.engine.fold(r.toString()) !== D.engine.fold(is.match)) return;
+      groups[is.severity === "hint" ? "hint" : "strong"].push(r);
+      if (i === activeIssue) groups.active.push(r.cloneRange());
+    });
+    for (const [k, ranges] of Object.entries(groups)) win.CSS.highlights.set(`decadre-${k}`, new win.Highlight(...ranges));
+  }
+
   let panelOpen = true;
   let state = { issues: [], checklist: [] };
 
@@ -238,15 +300,27 @@
       }
     });
 
-    // wp.data.subscribe fires on every store change: debounce, and skip if the text didn't change.
+    const hover = (ev) => {
+      const li = ev.target.closest(".issue");
+      const i = li && ev.type !== "mouseout" && ev.type !== "focusout" ? +li.dataset.i : -1;
+      if (i !== activeIssue) { activeIssue = i; paint(); }
+    };
+    for (const type of ["mouseover", "mouseout", "focusin", "focusout"]) root.addEventListener(type, hover);
+
+    // wp.data.subscribe fires on every store change: debounce, and only re-analyse if the text
+    // changed. Underlines are redrawn every time: WordPress can rebuild a paragraph's DOM (e.g. on
+    // selection) without changing its text, which leaves the old ranges pointing at nothing.
     let last = "", timer;
     const refresh = () => {
       const units = readPost(wp);
       const sig = JSON.stringify(units.map((u) => [u.id, u.html ?? u.text]));
-      if (sig === last) return;
-      last = sig;
-      state = analyse(units);
-      render(state);
+      if (sig !== last) {
+        last = sig;
+        state = analyse(units);
+        activeIssue = -1;
+        render(state);
+      }
+      paint();
     };
     wp.data.subscribe(() => { clearTimeout(timer); timer = setTimeout(refresh, 600); });
     refresh();
