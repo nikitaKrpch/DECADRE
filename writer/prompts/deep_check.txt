@@ -19,6 +19,12 @@ Cherche uniquement ces cinq types de problèmes :
 5. "sensationnalisme" — Récit dramatisé ou romantisé (enjeu 3) : formulations
    spectaculaires, détails morbides inutiles, vocabulaire amoureux pour décrire des violences.
 
+L'outil a déjà une liste de mots à éviter. Ces passages sont déjà signalés : ne les répète
+pas, et ne signale pas une phrase seulement parce qu'elle contient l'un d'eux. Concentre-toi
+sur ce qu'une liste de mots ne peut pas voir : le sens des phrases, ce qu'elles sous-entendent
+sur la victime ou l'auteur, la façon dont la relation est racontée.
+{deja}
+
 Règles strictes :
 - "extrait" : copie EXACTE du texte, mot pour mot, avec la même ponctuation. Le plus court
   possible (un groupe de mots, au maximum une phrase). Jamais de paraphrase.
@@ -35,6 +41,10 @@ Règles strictes :
 - N'ajoute aucun fait, aucun nom, aucun chiffre qui n'est pas dans l'article.
 - Ne change jamais les faits : garde « meurtre » pour un meurtre, et n'emploie « féminicide »
   que pour une femme tuée par son (ex-)partenaire.
+- Respecte la présomption d'innocence : si l'article emploie le conditionnel (« aurait »,
+  « serait »), ta suggestion le garde aussi.
+- Ne signale jamais un chiffre de contexte (statistique) ni une ressource d'aide : ce sont des
+  bonnes pratiques recommandées par le livret.
 - Les citations entre guillemets sont des paroles rapportées : signale-les seulement si
   l'article les reprend sans les contextualiser.
 - Au maximum 8 problèmes, les plus importants d'abord. S'il n'y en a aucun, renvoie une

@@ -84,13 +84,25 @@
   async function deepCheck(text) {
     if (!text.trim()) return;
     D.ui.setAiState("loading");
+    let ruleIssues = [];
     try {
-      const res = await D.deepcheck.run(text);
+      if (D.engine) ruleIssues = D.engine.findIssues(text, D.rules || []);
+    } catch (err) {
+      console.error("[Decadre] engine.findIssues failed", err);
+    }
+    try {
+      // The model is told what the rules already flag, so it looks for what a word list can't see.
+      const already = [...new Set(ruleIssues.map((is) => is.match))];
+      const res = await D.deepcheck.run(text, already);
       const list = Array.isArray(res) ? res : res.issues || [];
-      aiIssues = list.map((is) => Object.assign({}, is, { origin: "ai", key: is.key || `ai:${is.ruleId}:${is.start}` }));
-      D.ui.renderUnlocated(Array.isArray(res) ? [] : res.unlocated || []);
+      const unlocated = Array.isArray(res) ? [] : res.unlocated || [];
+      // Anything on words the rules already underline adds nothing: drop it (and don't count it).
+      aiIssues = list
+        .map((is) => Object.assign({}, is, { origin: "ai", key: is.key || `ai:${is.ruleId}:${is.start}` }))
+        .filter((a) => !ruleIssues.some((r) => a.start < r.end && r.start < a.end));
+      D.ui.renderUnlocated(unlocated);
       analyse();
-      D.ui.setAiState("done", aiIssues.length);
+      D.ui.setAiState("done", aiIssues.length + unlocated.length);
     } catch (err) {
       console.error("[Decadre] deep check failed", err);
       D.ui.setAiState("error");

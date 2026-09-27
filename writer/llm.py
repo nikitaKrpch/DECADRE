@@ -19,10 +19,12 @@ MAX_ISSUES = 8
 ENJEU = {"victime": 4, "auteur": 5, "nationalite": 5, "relation": 7, "sensationnalisme": 3}
 
 
-def ask_model(text):
+def ask_model(text, already=()):
     """The model's list of problems. Tries the shared key, then the team key (one retry each)."""
-    # replace(), not format(): the prompt contains JSON braces
-    messages = [{"role": "user", "content": PROMPT.replace("{article}", text)}]
+    deja = "\n".join(f"- « {a} »" for a in already) or "(aucun)"
+    # replace(), not format(): the prompt contains JSON braces. {deja} first, so an article
+    # containing "{deja}" can't be affected.
+    messages = [{"role": "user", "content": PROMPT.replace("{deja}", deja).replace("{article}", text)}]
     keys = [k for k in (os.getenv("OPENAI_API_KEY"), os.getenv("OPENAI_API_KEY_FALLBACK")) if k]
     error = None
     for key in keys:
@@ -91,10 +93,11 @@ def _in_quote(text, pos):
     return before.rfind("«") > before.rfind("»") or before.count('"') % 2 == 1
 
 
-def deep_check(text):
-    """{issues, unlocated} in the format the editor UI expects (see writer/static/main.js)."""
+def deep_check(text, already=()):
+    """{issues, unlocated} in the format the editor UI expects (see writer/static/main.js).
+    already: passages the rules already flag, which the model is told not to repeat."""
     issues, unlocated = [], []
-    for p in ask_model(text):
+    for p in ask_model(text, already):
         cat = str(p.get("categorie", "")).strip()
         excerpt = str(p.get("extrait", "")).strip()
         reason = str(p.get("raison", "")).strip()
