@@ -15,9 +15,13 @@
   const HELP_BOX =
     "\n\nBesoin d'aide ?\n" +
     "Si vous vous inquiétez pour vous ou un-e de vos proches, contactez en toute confidentialité :\n" +
-    "violencequefaire.ch — service de conseils en ligne anonyme et gratuit\n" +
-    "144 urgences médicales\n" +
-    "117 police secours";
+    "Police : 117\n" +
+    "Urgences médicales : 144\n" +
+    "La Main Tendue (adultes) : 143\n" +
+    "Pro Juventute (jeunes) : 147\n" +
+    "Aide aux victimes LAVI : 142\n" +
+    "Centre d'aide aux victimes : opferhilfe-schweiz.ch/fr\n" +
+    "violencequefaire.ch — service de conseils en ligne anonyme et gratuit";
 
   const STAT_DOMESTIC =
     "\n\nEn 2024, 21 127 infractions ont été enregistrées en Suisse dans le contexte de la violence " +
@@ -26,15 +30,16 @@
     "\n\nEn Suisse, 22 % des femmes ont subi des actes sexuels non consentis à partir de 16 ans " +
     "(étude gfs.bern pour Amnesty International).";
 
-  // 1. Help resources: a known service, or 117/144 next to words that show it's an emergency number
+  // 1. Help resources: a known service, or a helpline number (117 police, 144 urgences, 143 La Main
+  //    Tendue, 147 Pro Juventute, 142 aide aux victimes) next to words that show it's a helpline
   //    (so "117 femmes tuées" doesn't count).
   function hasHelpResource(t) {
-    if (/violencequefaire|\blavi\b|\bavvec\b|solidarite femmes|aide aux victimes/.test(t)) return true;
-    const re = /\b(117|144)\b/g;
+    if (/violencequefaire|opferhilfe|\blavi\b|\bavvec\b|solidarite femmes|aide aux victimes|main tendue|pro juventute/.test(t)) return true;
+    const re = /\b(117|144|143|147|142)\b/g;
     let m;
     while ((m = re.exec(t))) {
       const around = t.slice(Math.max(0, m.index - 40), m.index + 43);
-      if (/police|urgence|appel|contact|compos|ambulance|secours/.test(around)) return true;
+      if (/police|urgence|appel|contact|compos|ambulance|secours|numero|ecoute/.test(around)) return true;
     }
     return false;
   }
