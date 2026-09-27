@@ -44,6 +44,39 @@ Open http://localhost:5001 and log in with the password from `.env`.
 The app reloads automatically when you save a code file.
 If you change `.env`, stop the app (Ctrl+C) and start it again.
 
+## WordPress extension (Chrome)
+
+`extension/` is a Chrome extension that brings the writing assistant into the
+WordPress block editor: it lists the problem wording, underlines it in the text,
+replaces it in one click (Ctrl+Z undoes it) and inserts the help box or a statistic.
+It runs entirely in the browser; nothing is sent anywhere.
+
+### 1. A WordPress to test on
+Any WordPress with the block editor works. For a local one (needs Node.js):
+
+```
+npx @wp-playground/cli@latest server --port=9400 --login
+```
+
+Then open http://localhost:9400/wp-admin/post-new.php (already logged in;
+otherwise `admin` / `password`). This WordPress is temporary: it is wiped when
+you stop the command, so keep your test article somewhere.
+
+### 2. Load the extension
+1. Open `chrome://extensions` and turn on **Developer mode** (top right)
+2. **Load unpacked** → choose the `extension/` folder
+3. Open or reload a post in WordPress: the décadréE panel appears at the bottom right
+
+After changing the extension's code: click the reload arrow on its card in
+`chrome://extensions`, then reload the post.
+
+### 3. When the rules change
+The extension uses copies of the web app's files. After `rules.js`, `engine.js`
+or `checklist.js` change in `writer/static/`, copy them again:
+
+**Mac / Linux:** `cp writer/static/{rules,engine,checklist}.js extension/shared/`
+**Windows:** `copy writer\static\rules.js extension\shared\` (same for `engine.js` and `checklist.js`)
+
 ## Never commit
 - `.env` (API keys: the organisers delete them Sunday evening, and they
   must never appear in a commit, a screenshot or a shared document)
