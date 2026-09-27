@@ -9,9 +9,8 @@
 {% endblock %}
 
 {% block scripts %}
-{# Order matters: data and modules first, then the UI, then main.js which wires them.
-   dev/mock.js only fills in modules that are still missing; remove it at code freeze. #}
-{% for f in ['rules.js', 'engine.js', 'checklist.js', 'deepcheck.js', 'dev/mock.js', 'samples.js', 'ui.js', 'main.js'] %}
+{# Order matters: data and modules first, then the UI, then main.js which wires them. #}
+{% for f in ['rules.js', 'engine.js', 'checklist.js', 'deepcheck.js', 'samples.js', 'ui.js', 'main.js'] %}
 <script src="{{ url_for('writer.static', filename=f) }}"></script>
 {% endfor %}
 {% endblock %}

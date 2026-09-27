@@ -78,6 +78,18 @@
   }
 
   // Keep the capitalisation of the original word ("Drame" -> "Féminicide").
+  // Suggestions that fit the words as written (engine.adapt / engine.agree): "des drames" ->
+  // "féminicides", "une dispute" -> "des violences…"; null when one would break the sentence
+  // (the verb "disputait", "d'une violente dispute").
+  function fitted(is) {
+    const E = D.engine;
+    return (is.replacements || []).map((r) => {
+      if (!E || !E.adapt || !E.agree) return r;
+      const a = E.adapt(is, r);
+      return a && E.agree(getText(), is.start, is.end, a) ? a : null;
+    });
+  }
+
   function matchCase(original, replacement) {
     if (!original || !replacement) return replacement;
     if (original.length > 1 && original === original.toUpperCase() && original !== original.toLowerCase()) {
@@ -366,7 +378,7 @@
     if (!is) return;
     activeKey = key;
     const k = KINDS[kindOf(is)];
-    const reps = is.replacements || [];
+    const reps = fitted(is);
 
     els.card.innerHTML = `
       <div class="dw-card-head">
@@ -377,12 +389,14 @@
       ${is.reason ? `<p class="dw-card-reason">${esc(is.reason)}</p>` : ""}
       ${is.inQuote ? `<p class="dw-card-note">${esc(STRINGS.quoteNote)}</p>` : ""}
       ${
-        reps.length
+        reps.length && !reps.some(Boolean)
+          ? `<p class="dw-card-note">À reformuler : « ${esc(is.match)} » ne peut pas être remplacé mot pour mot. Piste : ${esc(is.replacements.join(" / "))}</p>`
+          : reps.length
           ? `<p class="dw-card-label">${esc(STRINGS.replaceWith)}</p>
              <div class="dw-card-reps">${reps
                .map(
                  (r, i) =>
-                   `<button type="button" class="dw-rep" data-card="replace" data-index="${i}"
+                   !r ? "" : `<button type="button" class="dw-rep" data-card="replace" data-index="${i}"
                       aria-label="Remplacer « ${esc(is.match)} » par « ${esc(matchCase(is.match, r))} »">${esc(matchCase(is.match, r))}</button>`
                )
                .join("")}</div>`
@@ -430,7 +444,7 @@
       return;
     }
     if (action === "replace") {
-      const rep = matchCase(is.match, is.replacements[Number(btn.dataset.index)]);
+      const rep = matchCase(is.match, fitted(is)[Number(btn.dataset.index)]);
       closeCard();
       if (handlers.onReplace) handlers.onReplace(is, rep);
       else replaceRange(is.start, is.end, rep);

@@ -114,7 +114,11 @@
     if (!root || !D.ui) return;
     D.ui.init(root, {
       onInput: analyse,
-      onReplace: (is, rep) => D.ui.replaceRange(is.start, is.end, rep),
+      onReplace: (is, rep) => {
+        // "une dispute" -> "des violences…": the determiner is replaced too (engine.agree)
+        const a = (D.engine && D.engine.agree && D.engine.agree(D.ui.getText(), is.start, is.end, rep)) || { start: is.start, end: is.end, text: rep };
+        D.ui.replaceRange(a.start, a.end, a.text);
+      },
       onIgnore: (is) => {
         ignored.add(ignoreId(is, D.ui.getText()));
         analyse();
