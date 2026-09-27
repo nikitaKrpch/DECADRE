@@ -7,7 +7,7 @@
  *
  * Public API (see writer/CONTRACT.md):
  *   Decadre.ui.init(root, handlers)   handlers: { onInput, onReplace, onIgnore,
- *                                               onSample, onDeepCheck }
+ *                                               onDeepCheck }
  *   Decadre.ui.render(text, issues)   issues sorted by start, non-overlapping
  *   Decadre.ui.getText() / setText(text)
  *   Decadre.ui.replaceRange(start, end, text)
@@ -25,7 +25,6 @@
     title: "Assistant de rédaction",
     subtitle: "Des suggestions basées sur les recommandations de décadréE, pendant que vous écrivez.",
     placeholder: "Collez ou écrivez votre article ici…",
-    loadSample: "Charger un exemple",
     clear: "Effacer",
     editorLabel: "Texte de l'article",
     disclaimer:
@@ -98,7 +97,6 @@
       <div class="dw-grid">
         <section class="dw-main">
           <div class="dw-toolbar">
-            <button type="button" class="dw-btn" data-act="sample">${esc(STRINGS.loadSample)}</button>
             <button type="button" class="dw-btn dw-btn-quiet" data-act="clear">${esc(STRINGS.clear)}</button>
             <span class="dw-wordcount"></span>
           </div>
@@ -180,7 +178,6 @@
       if (activeKey) placeCard(activeKey);
     });
 
-    root.querySelector('[data-act="sample"]').addEventListener("click", () => handlers.onSample && handlers.onSample());
     root.querySelector('[data-act="clear"]').addEventListener("click", clearText);
     els.aiButton.addEventListener("click", () => handlers.onDeepCheck && handlers.onDeepCheck(getText()));
 

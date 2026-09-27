@@ -107,10 +107,6 @@
         ignored.add(ignoreId(is, D.ui.getText()));
         analyse();
       },
-      onSample: () => {
-        const s = (D.samples || [])[0];
-        if (s) D.ui.setText(s.text);
-      },
       onDeepCheck: D.deepcheck ? deepCheck : null,
     });
   }
